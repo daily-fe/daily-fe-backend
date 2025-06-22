@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
+import { BlogModule } from './blog/blog.module';
 import { GeminiModule } from './gemini/gemini.module';
 import { ScraperModule } from './scraper/scraper.module';
 
@@ -12,6 +13,7 @@ import { ScraperModule } from './scraper/scraper.module';
 		}),
 		GeminiModule,
 		ScraperModule,
+		BlogModule,
 	],
 	controllers: [],
 	providers: [AppService],

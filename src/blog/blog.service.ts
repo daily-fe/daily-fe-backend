@@ -18,7 +18,7 @@ export class BlogService {
 
 		const promptTemplate = `
 			다음 텍스트를 분석해서 제목, 150자 내외의 한국어 요약, 그리고 이 글의 핵심 내용을 나타내는 쉼표로 구분된 태그 3~5개, 작성자, 작성일을 추출해줘.
-			title, summary는 필수값이고 다른 필드 값들이 없다면 tags는 빈 배열, 나머지는 undefined 처리해줘.
+			title, summary는 필수값이고 다른 필드 값들이 없다면 tags는 빈 배열, 나머지는 빈 값으로 처리해줘.
 			반드시 다음과 같은 JSON 형식으로만 응답해야 해:
 			{"title": "추출된 제목", "summary": "요약 내용", "tags": ["태그1", "태그2", "태그3", "태그4", "태그5"], 'author': '추출된 작성자', 'createdAt': 'YYYY-MM-DD HH:MM'}
 		`;

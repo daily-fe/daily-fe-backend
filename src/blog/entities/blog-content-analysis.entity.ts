@@ -3,8 +3,8 @@ export class BlogContentAnalysis {
 		public readonly title: string,
 		public readonly summary: string,
 		public readonly tags: string[],
-		public readonly author: string,
-		public readonly createdAt?: Date,
+		public readonly author: string | null,
+		public readonly createdAt: Date | null,
 	) {}
 
 	static create(
@@ -14,9 +14,9 @@ export class BlogContentAnalysis {
 		author: string,
 		createdAt: Date,
 	): BlogContentAnalysis {
-		let date: Date | undefined = new Date(createdAt);
+		let date: Date | null = new Date(createdAt);
 		if (Number.isNaN(date.getTime())) {
-			date = undefined;
+			date = null;
 		}
 		return new BlogContentAnalysis(title, summary, tags, author, date);
 	}

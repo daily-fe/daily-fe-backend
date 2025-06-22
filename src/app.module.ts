@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
+import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
 	imports: [
@@ -8,6 +9,7 @@ import { AppService } from './app.service';
 			isGlobal: true,
 			envFilePath: '.env',
 		}),
+		GeminiModule,
 	],
 	controllers: [],
 	providers: [AppService],

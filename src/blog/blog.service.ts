@@ -49,11 +49,13 @@ export class BlogService {
 		try {
 			const analysis = JSON.parse(responseText);
 			return BlogContentAnalysis.create(
+				url,
 				analysis.title,
 				analysis.summary,
 				analysis.tags,
 				analysis.author,
 				analysis.createdAt,
+				analysis.category,
 			);
 		} catch (error) {
 			console.error('blogService analyzeUrl json parse error:', error);

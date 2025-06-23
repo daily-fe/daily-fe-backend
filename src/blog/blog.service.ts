@@ -16,14 +16,33 @@ export class BlogService {
 	async analyzeUrl(url: string): Promise<BlogContentAnalysis> {
 		const content = await this.webContentScraper.scrape(url);
 
-		const promptTemplate = `
-			다음 텍스트를 분석해서 제목, 150자 내외의 한국어 요약, 그리고 이 글의 핵심 내용을 나타내는 쉼표로 구분된 태그 3~5개, 작성자, 작성일을 추출해줘.
-			title, summary는 필수값이고 다른 필드 값들이 없다면 tags는 빈 배열, 나머지는 빈 값으로 처리해줘.
-			반드시 다음과 같은 JSON 형식으로만 응답해야 해:
-			{"title": "추출된 제목", "summary": "요약 내용", "tags": ["태그1", "태그2", "태그3", "태그4", "태그5"], 'author': '추출된 작성자', 'createdAt': 'YYYY-MM-DD HH:MM'}
-		`;
+		const prompt = `너는 주어진 텍스트에서 핵심 정보를 추출하여 JSON 형식으로 반환하는 전문 분석가이자 프론트엔드 개발자야.
+다음 지침에 따라 주어진 텍스트를 분석하고 결과를 JSON으로 제공해줘.
 
-		const fullPrompt = `${promptTemplate}\n\n---\n분석할 텍스트:\n${content.substring(0, 10000)}`;
+[추출할 정보 및 지침]
+1.  **title**: 글의 전체 제목 (필수)
+2.  **summary**: 글의 핵심 내용을 한국어로 두 줄 요약해. 각 문장마다 \\n 으로 구분해줘.
+3.  **tags**: 글의 주제를 나타내는 핵심 키워드 3~5개. (결과가 없다면 빈 배열 \`[]\`로)
+4.  **author**: 글의 작성자. (결과가 없다면 빈 문자열 \`''\`로)
+5.  **createdAt**: 글의 작성일. ('YYYY-MM-DD HH:MM' 형식, 결과가 없다면 빈 문자열 \`''\`로)
+6.  **category**: 다음 중 가장 적절한 카테고리 하나를 선택: 'Deep Dive', 'Trends', 'Interview', 'Review', 'Others' (필수)
+
+[출력 형식]
+- 반드시 아래 JSON 스키마를 준수해야 하며, 다른 어떤 텍스트도 포함하지 마.
+- \`tags\`는 문자열
+
+\`\`\`json
+{
+  "title": "추출된 제목",
+  "summary": "요약된 내용",
+  "tags": ["태그1", "태그2", "태그3"],
+  "author": "작성자 이름",
+  "createdAt": "YYYY-MM-DD HH:MM",
+  "category": "분류된 카테고리"
+}
+`;
+
+		const fullPrompt = `${prompt}\n\n---\n[분석할 텍스트]:\n${content.substring(0, 10000)}`;
 
 		const responseText = await this.geminiService.generateContent(fullPrompt, GeminiModel.FLASH);
 

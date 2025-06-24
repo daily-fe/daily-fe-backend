@@ -30,11 +30,11 @@ import { ScraperModule } from './scraper/scraper.module';
 			inject: [ConfigService],
 			useFactory: (config: ConfigService) => ({
 				type: 'postgres',
-				host: config.get<string>('DB_HOST', 'localhost'),
-				port: +config.get<number>('DB_PORT', 5432),
-				username: config.get<string>('DB_USERNAME', 'postgres'),
-				password: config.get<string>('DB_PASSWORD', ''),
-				database: config.get<string>('DB_DATABASE', 'daily'),
+				host: config.get<string>('DB_HOST'),
+				port: config.get<number>('DB_PORT'),
+				username: config.get<string>('DB_USERNAME'),
+				password: config.get<string>('DB_PASSWORD'),
+				database: config.get<string>('DB_DATABASE'),
 				autoLoadEntities: true,
 				// TODO 개발 환경에서만 true
 				synchronize: true,

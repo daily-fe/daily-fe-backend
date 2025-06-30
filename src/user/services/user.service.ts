@@ -11,7 +11,8 @@ export class UserService {
 	) {}
 
 	async findByGithubId(githubId: string): Promise<User | undefined> {
-		return this.userRepository.findOne({ where: { githubId } });
+		const user = await this.userRepository.findOne({ where: { githubId } });
+		return user ?? undefined;
 	}
 
 	async create(userData: Partial<User>): Promise<User> {
@@ -21,5 +22,9 @@ export class UserService {
 
 	async findAll(): Promise<User[]> {
 		return this.userRepository.find();
+	}
+
+	async update(user: Partial<User>): Promise<User> {
+		return this.userRepository.save(user);
 	}
 }

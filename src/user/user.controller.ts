@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UserService } from './services/user.service';
 
@@ -19,5 +19,10 @@ export class UserController {
 	@Get(':githubId')
 	async findByGithubId(@Param('githubId') githubId: string): Promise<User | undefined> {
 		return this.userService.findByGithubId(githubId);
+	}
+
+	@Post('update')
+	async update(@Body() userData: Partial<User>, @Req() req: Request): Promise<User> {
+		return this.userService.update({ ...userData, id: req['user'].id });
 	}
 }

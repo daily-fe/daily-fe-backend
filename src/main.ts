@@ -8,6 +8,6 @@ async function bootstrap() {
 	// 임시로 모든 출처에서 허용되도록 설정
 	// TODO
 	app.enableCors();
-	await app.listen(3000);
+	await app.listen(3001);
 }
 bootstrap();

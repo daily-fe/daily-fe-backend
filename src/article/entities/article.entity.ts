@@ -1,9 +1,9 @@
 import { generateBase62Id } from 'src/utils/base62';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { BlogLike } from './blog-like.entity';
+import { ArticleLike } from './article-like.entity';
 
 @Entity()
-export class BlogContentAnalysis {
+export class Article {
 	@PrimaryColumn()
 	url: string;
 
@@ -29,10 +29,10 @@ export class BlogContentAnalysis {
 	category: string;
 
 	@OneToMany(
-		() => BlogLike,
-		(like) => like.blog,
+		() => ArticleLike,
+		(like) => like.article,
 	)
-	likes: BlogLike[];
+	likes: ArticleLike[];
 
 	constructor(
 		url: string,
@@ -62,13 +62,13 @@ export class BlogContentAnalysis {
 		author: string,
 		createdAt: Date,
 		category: string,
-	): BlogContentAnalysis {
+	): Article {
 		let date: Date | null = new Date(createdAt);
 		if (Number.isNaN(date.getTime())) {
 			date = null;
 		}
 		const id = generateBase62Id();
-		return new BlogContentAnalysis(url, id, title, summary, tags, author, date, category);
+		return new Article(url, id, title, summary, tags, author, date, category);
 	}
 
 	toResponse(likedByMe: boolean) {

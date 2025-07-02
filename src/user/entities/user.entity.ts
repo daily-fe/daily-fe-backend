@@ -1,4 +1,4 @@
-import { BlogLike } from 'src/blog/entities/blog-like.entity';
+import { ArticleLike } from 'src/article/entities/article-like.entity';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export enum Role {
@@ -36,8 +36,8 @@ export class User {
 	updatedAt: Date;
 
 	@OneToMany(
-		() => BlogLike,
+		() => ArticleLike,
 		(like) => like.user,
 	)
-	blogLikes: BlogLike[];
+	articleLikes: ArticleLike[];
 }

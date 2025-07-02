@@ -1,25 +1,25 @@
 import { User } from 'src/user/entities/user.entity';
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { BlogContentAnalysis } from './blog-content-analysis.entity';
+import { Article } from './article.entity';
 
 @Entity()
-@Unique(['user', 'blog'])
-export class BlogLike {
+@Unique(['user', 'article'])
+export class ArticleLike {
 	@PrimaryGeneratedColumn()
 	id: number;
 
 	@ManyToOne(
 		() => User,
-		(user) => user.blogLikes,
+		(user) => user.articleLikes,
 		{ eager: true },
 	)
 	user: User;
 
 	@ManyToOne(
-		() => BlogContentAnalysis,
-		(blog) => blog.likes,
+		() => Article,
+		(article) => article.likes,
 		{ eager: true },
 	)
-	@JoinColumn({ name: 'blogId', referencedColumnName: 'id' })
-	blog: BlogContentAnalysis;
+	@JoinColumn({ name: 'articleId', referencedColumnName: 'id' })
+	article: Article;
 }

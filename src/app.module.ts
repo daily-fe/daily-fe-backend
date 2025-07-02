@@ -5,12 +5,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AppService } from './app.service';
+import { ArticleModule } from './article/article.module';
+import { Article } from './article/entities/article.entity';
+import { ArticleLike } from './article/entities/article-like.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/guard/auth.guard';
 import { BearerTokenMiddleware } from './auth/middleware/beare-token.middleware';
-import { BlogModule } from './blog/blog.module';
-import { BlogContentAnalysis } from './blog/entities/blog-content-analysis.entity';
-import { BlogLike } from './blog/entities/blog-like.entity';
 import { GeminiModule } from './gemini/gemini.module';
 import { ScraperModule } from './scraper/scraper.module';
 import { User } from './user/entities/user.entity';
@@ -47,7 +47,7 @@ import { UserModule } from './user/user.module';
 				autoLoadEntities: true,
 				// TODO 개발 환경에서만 true
 				synchronize: true,
-				entities: [User, BlogContentAnalysis, BlogLike],
+				entities: [User, Article, ArticleLike],
 			}),
 		}),
 		JwtModule.registerAsync({
@@ -60,7 +60,7 @@ import { UserModule } from './user/user.module';
 		}),
 		GeminiModule,
 		ScraperModule,
-		BlogModule,
+		ArticleModule,
 		UserModule,
 		AuthModule,
 	],

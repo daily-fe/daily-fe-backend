@@ -6,20 +6,20 @@ import { IWebContentScraper, WEB_CONTENT_SCRAPER } from 'src/scraper/interfaces/
 import { User } from 'src/user/entities/user.entity';
 import { generateBase62Id } from 'src/utils/base62';
 import { Repository } from 'typeorm';
-import { BlogContentAnalysis } from './entities/blog-content-analysis.entity';
-import { BlogLike } from './entities/blog-like.entity';
+import { Article } from './entities/article.entity';
+import { ArticleLike } from './entities/article-like.entity';
 
 @Injectable()
-export class BlogService {
+export class ArticleService {
 	constructor(
 		@Inject(WEB_CONTENT_SCRAPER)
 		private readonly webContentScraper: IWebContentScraper,
 		@Inject(GEMINI_SERVICE)
 		private readonly geminiService: IGeminiService,
-		@InjectRepository(BlogContentAnalysis)
-		private readonly blogRepository: Repository<BlogContentAnalysis>,
-		@InjectRepository(BlogLike)
-		private readonly blogLikeRepository: Repository<BlogLike>,
+		@InjectRepository(Article)
+		private readonly articleRepository: Repository<Article>,
+		@InjectRepository(ArticleLike)
+		private readonly articleLikeRepository: Repository<ArticleLike>,
 		@InjectRepository(User)
 		private readonly userRepository: Repository<User>,
 	) {}
@@ -29,12 +29,12 @@ export class BlogService {
 		let exists = true;
 		do {
 			id = generateBase62Id();
-			exists = await this.blogRepository.exist({ where: { id } });
+			exists = await this.articleRepository.exist({ where: { id } });
 		} while (exists);
 		return id;
 	}
 
-	async analyzeUrl(url: string): Promise<BlogContentAnalysis> {
+	async analyzeUrl(url: string): Promise<Article> {
 		const content = await this.webContentScraper.scrape(url);
 
 		const prompt = `너는 주어진 텍스트에서 핵심 정보를 추출하여 JSON 형식으로 반환하는 전문 분석가이자 프론트엔드 개발자야.
@@ -70,7 +70,7 @@ export class BlogService {
 		try {
 			const analysis = JSON.parse(responseText);
 			const id = await this.generateUniqueId();
-			return new BlogContentAnalysis(
+			return new Article(
 				url,
 				id,
 				analysis.title,
@@ -81,124 +81,124 @@ export class BlogService {
 				analysis.category,
 			);
 		} catch (error) {
-			console.error('blogService analyzeUrl json parse error:', error);
+			console.error('articleService analyzeUrl json parse error:', error);
 			throw new BadRequestException('JSON 파싱 중 오류가 발생했습니다.');
 		}
 	}
 
-	async createBlog(url: string): Promise<BlogContentAnalysis> {
-		const exists = await this.blogRepository.findOne({ where: { url } });
-		if (exists) throw new BadRequestException('이미 등록된 블로그입니다.');
-		const blog = await this.analyzeUrl(url);
-		return this.blogRepository.save(blog);
+	async createArticle(url: string): Promise<Article> {
+		const exists = await this.articleRepository.findOne({ where: { url } });
+		if (exists) throw new BadRequestException('이미 등록된 아티클입니다.');
+		const article = await this.analyzeUrl(url);
+		return this.articleRepository.save(article);
 	}
 
-	async likeBlog(id: string, userId: number) {
-		const blog = await this.blogRepository.findOne({ where: { id } });
-		if (!blog) throw new NotFoundException('Blog not found');
+	async likeArticle(id: string, userId: number) {
+		const article = await this.articleRepository.findOne({ where: { id } });
+		if (!article) throw new NotFoundException('Article not found');
 
 		const user = await this.userRepository.findOne({ where: { id: userId } });
 		if (!user) throw new NotFoundException('User not found');
 
-		const alreadyLiked = await this.blogLikeRepository.findOne({ where: { blog, user } });
+		const alreadyLiked = await this.articleLikeRepository.findOne({ where: { article, user } });
 		if (alreadyLiked) return;
 
-		const like = this.blogLikeRepository.create({ blog, user });
-		await this.blogLikeRepository.save(like);
+		const like = this.articleLikeRepository.create({ article, user });
+		await this.articleLikeRepository.save(like);
 	}
 
-	async unlikeBlog(id: string, userId: number) {
-		const blog = await this.blogRepository.findOne({ where: { id } });
-		if (!blog) throw new NotFoundException('Blog not found');
+	async unlikeArticle(id: string, userId: number) {
+		const article = await this.articleRepository.findOne({ where: { id } });
+		if (!article) throw new NotFoundException('Article not found');
 
-		const like = await this.blogLikeRepository.findOne({
+		const like = await this.articleLikeRepository.findOne({
 			where: {
-				blog: { id: blog.id },
+				article: { id: article.id },
 				user: { id: userId },
 			},
 		});
 		if (like) {
-			await this.blogLikeRepository.delete(like.id);
+			await this.articleLikeRepository.delete(like.id);
 		}
 	}
 
-	async getBlogWithLikes(blogId: string, userId?: number) {
+	async getArticleWithLikes(articleId: string, userId?: number) {
 		if (!userId) {
-			const blog = await this.blogRepository.findOne({
-				where: { id: blogId },
+			const article = await this.articleRepository.findOne({
+				where: { id: articleId },
 				relations: ['likes', 'likes.user'],
 			});
-			if (!blog) throw new NotFoundException('Blog not found');
-			return blog.toResponse(false);
+			if (!article) throw new NotFoundException('Article not found');
+			return article.toResponse(false);
 		}
 
 		// QueryBuilder로 likedByMe를 효율적으로 조회
-		const blog = await this.blogRepository
-			.createQueryBuilder('blog')
-			.leftJoinAndSelect('blog.likes', 'like')
+		const article = await this.articleRepository
+			.createQueryBuilder('article')
+			.leftJoinAndSelect('article.likes', 'like')
 			.leftJoinAndSelect('like.user', 'user')
-			.where('blog.id = :blogId', { blogId })
+			.where('article.id = :articleId', { articleId })
 			.addSelect(
 				(qb) =>
 					qb
 						.select('COUNT(*) > 0', 'liked')
-						.from('blog_like', 'bl')
-						.where('bl."blogId" = :blogId', { blogId })
-						.andWhere('bl."userId" = :userId', { userId }),
+						.from('article_like', 'al')
+						.where('al."articleId" = :articleId', { articleId })
+						.andWhere('al."userId" = :userId', { userId }),
 				'likedByMe',
 			)
 			.getRawAndEntities();
 
-		const entity = blog.entities[0];
-		if (!entity) throw new NotFoundException('Blog not found');
-		const likedByMe = blog.raw[0]?.likedByMe === true || blog.raw[0]?.likedByMe === 'true';
+		const entity = article.entities[0];
+		if (!entity) throw new NotFoundException('Article not found');
+		const likedByMe = article.raw[0]?.likedByMe === true || article.raw[0]?.likedByMe === 'true';
 		return entity.toResponse(likedByMe);
 	}
 
-	async getAllBlogs(userId?: number) {
+	async getAllArticles(userId?: number) {
 		if (!userId) {
-			const blogs = await this.blogRepository.find({
+			const articles = await this.articleRepository.find({
 				relations: ['likes', 'likes.user'],
 				order: { createdAt: 'DESC' },
 			});
-			return blogs.map((blog) => blog.toResponse(false));
+			return articles.map((article) => article.toResponse(false));
 		}
 
 		// userId가 실제로 존재하는지 체크
 		const userExists = await this.userRepository.exist({ where: { id: userId } });
 		if (!userExists) {
-			const blogs = await this.blogRepository.find({
+			const articles = await this.articleRepository.find({
 				relations: ['likes', 'likes.user'],
 				order: { createdAt: 'DESC' },
 			});
-			return blogs.map((blog) => blog.toResponse(false));
+			return articles.map((article) => article.toResponse(false));
 		}
 
-		const blogs = await this.blogRepository
-			.createQueryBuilder('blog')
-			.leftJoinAndSelect('blog.likes', 'like')
+		const articles = await this.articleRepository
+			.createQueryBuilder('article')
+			.leftJoinAndSelect('article.likes', 'like')
 			.leftJoinAndSelect('like.user', 'user')
-			.orderBy('blog.createdAt', 'DESC')
-			.addSelect('blog.id', 'blog_id')
+			.orderBy('article.createdAt', 'DESC')
+			.addSelect('article.id', 'article_id')
 			.addSelect((qb) => {
 				return qb
 					.select('COUNT(*) > 0', 'liked')
-					.from('blog_like', 'bl')
-					.where('bl."blogId" = blog.id')
-					.andWhere('bl."userId" = :userId', { userId });
+					.from('article_like', 'al')
+					.where('al."articleId" = article.id')
+					.andWhere('al."userId" = :userId', { userId });
 			}, 'likedByMe')
 			.getRawAndEntities();
 
 		const likedByMeMap = new Map<string, boolean>();
-		blogs.raw.forEach((row: any) => {
-			if (row.blog_id !== undefined) {
-				likedByMeMap.set(row.blog_id, row.likedByMe === true || row.likedByMe === 'true');
+		articles.raw.forEach((row: any) => {
+			if (row.article_id !== undefined) {
+				likedByMeMap.set(row.article_id, row.likedByMe === true || row.likedByMe === 'true');
 			}
 		});
 
-		return blogs.entities.map((blog) => {
-			const likedByMe = likedByMeMap.get(blog.id) ?? false;
-			return blog.toResponse(likedByMe);
+		return articles.entities.map((article) => {
+			const likedByMe = likedByMeMap.get(article.id) ?? false;
+			return article.toResponse(likedByMe);
 		});
 	}
 }

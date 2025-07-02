@@ -30,6 +30,13 @@ export class GetAllArticlesUseCase {
 			});
 			return articles.map((article) => article.toResponse(false));
 		}
+		const likedByMeSubQuery = (qb) =>
+			qb
+				.select('COUNT(*) > 0', 'liked')
+				.from('article_like', 'al')
+				.where('al."articleId" = article.id')
+				.andWhere('al."userId" = :userId', { userId });
+
 		const articles = await this.articleRepository
 			.createQueryBuilder('article')
 			.leftJoinAndSelect('article.likes', 'like')
@@ -37,13 +44,7 @@ export class GetAllArticlesUseCase {
 			.leftJoinAndSelect('article.createdBy', 'createdBy')
 			.orderBy('article.createdAt', 'DESC')
 			.addSelect('article.id', 'article_id')
-			.addSelect((qb) => {
-				return qb
-					.select('COUNT(*) > 0', 'liked')
-					.from('article_like', 'al')
-					.where('al."articleId" = article.id')
-					.andWhere('al."userId" = :userId', { userId });
-			}, 'likedByMe')
+			.addSelect(likedByMeSubQuery, 'likedByMe')
 			.getRawAndEntities();
 		const likedByMeMap = new Map<string, boolean>();
 		articles.raw.forEach((row: any) => {

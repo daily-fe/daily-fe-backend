@@ -20,21 +20,21 @@ export class GetArticleUseCase {
 			if (!article) throw new NotFoundException('Article not found');
 			return article.toResponse(false);
 		}
+		const likedByMeSubQuery = (qb) =>
+			qb
+				.select('COUNT(*) > 0', 'liked')
+				.from('article_like', 'al')
+				.where('al."articleId" = article.id')
+				.andWhere('al."userId" = :userId');
+
 		const article = await this.articleRepository
 			.createQueryBuilder('article')
 			.leftJoinAndSelect('article.likes', 'like')
 			.leftJoinAndSelect('like.user', 'user')
 			.leftJoinAndSelect('article.createdBy', 'createdBy')
 			.where('article.id = :articleId', { articleId })
-			.addSelect(
-				(qb) =>
-					qb
-						.select('COUNT(*) > 0', 'liked')
-						.from('article_like', 'al')
-						.where('al."articleId" = :articleId', { articleId })
-						.andWhere('al."userId" = :userId', { userId }),
-				'likedByMe',
-			)
+			.addSelect(likedByMeSubQuery, 'likedByMe')
+			.setParameter('userId', userId)
 			.getRawAndEntities();
 		const entity = article.entities[0];
 		if (!entity) throw new NotFoundException('Article not found');

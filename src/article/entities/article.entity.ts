@@ -67,7 +67,7 @@ export class Article {
 		title: string,
 		summary: string,
 		tags: string[],
-		author: string,
+		author: string | null,
 		createdAt: Date,
 		category: Category,
 		createdBy: User,

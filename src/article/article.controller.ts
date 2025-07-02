@@ -2,6 +2,7 @@ import {
 	Body,
 	ClassSerializerInterceptor,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Post,
@@ -37,7 +38,6 @@ export class ArticleController {
 	@Public()
 	@UseGuards(OptionalAuthGuard)
 	async getAllArticles(@Req() req) {
-		console.log('req', req.user);
 		const userId = req.user?.id;
 		return this.articleService.getAllArticles(userId);
 	}
@@ -50,12 +50,14 @@ export class ArticleController {
 	}
 
 	@Post(':id/like')
-	async likeArticle(@Param('id') id: string, @Body('userId') userId: number) {
+	async likeArticle(@Param('id') id: string, @Req() req) {
+		const userId = req.user?.id;
 		return this.articleService.likeArticle(id, userId);
 	}
 
-	@Post(':id/unlike')
-	async unlikeArticle(@Param('id') id: string, @Body('userId') userId: number) {
+	@Delete(':id/like')
+	async unlikeArticle(@Param('id') id: string, @Req() req) {
+		const userId = req.user?.id;
 		return this.articleService.unlikeArticle(id, userId);
 	}
 }

@@ -1,12 +1,16 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/guard/auth.guard';
 import { BearerTokenMiddleware } from './auth/middleware/beare-token.middleware';
 import { BlogModule } from './blog/blog.module';
+import { BlogContentAnalysis } from './blog/entities/blog-content-analysis.entity';
+import { BlogLike } from './blog/entities/blog-like.entity';
 import { GeminiModule } from './gemini/gemini.module';
 import { ScraperModule } from './scraper/scraper.module';
 import { User } from './user/entities/user.entity';
@@ -43,7 +47,7 @@ import { UserModule } from './user/user.module';
 				autoLoadEntities: true,
 				// TODO 개발 환경에서만 true
 				synchronize: true,
-				entities: [User],
+				entities: [User, BlogContentAnalysis, BlogLike],
 			}),
 		}),
 		JwtModule.registerAsync({
@@ -61,7 +65,13 @@ import { UserModule } from './user/user.module';
 		AuthModule,
 	],
 	controllers: [],
-	providers: [AppService],
+	providers: [
+		AppService,
+		{
+			provide: APP_GUARD,
+			useClass: AuthGuard,
+		},
+	],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {
@@ -71,6 +81,7 @@ export class AppModule implements NestModule {
 				{ path: 'auth/login', method: RequestMethod.POST },
 				{ path: 'auth/register', method: RequestMethod.POST },
 				{ path: 'auth/refresh', method: RequestMethod.POST },
+				{ path: 'blog', method: RequestMethod.GET },
 			)
 			.forRoutes('*');
 	}

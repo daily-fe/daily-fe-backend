@@ -89,7 +89,6 @@ export class AuthService {
 	}
 
 	async refreshAccessToken({ refreshToken }: RefreshTokenDto) {
-		console.log('refreshAccessToken', refreshToken);
 		try {
 			const payload = this.jwtService.verify(refreshToken, {
 				secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
@@ -99,7 +98,7 @@ export class AuthService {
 				{ id: payload.sub, role: payload.role },
 				false,
 			);
-			return { accessToken, accessTokenExpires };
+			return { accessToken, accessTokenExpires, refreshToken };
 		} catch (e) {
 			throw new UnauthorizedException('Invalid refresh token');
 		}

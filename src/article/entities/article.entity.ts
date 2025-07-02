@@ -1,5 +1,8 @@
+import { User } from 'src/user/entities/user.entity';
 import { generateBase62Id } from 'src/utils/base62';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { CATEGORIES, Category } from '../constants';
+import { ArticleResponse } from '../dto/article-response.dto';
 import { ArticleLike } from './article-like.entity';
 
 @Entity()
@@ -25,14 +28,17 @@ export class Article {
 	@Column({ type: 'timestamp', nullable: true })
 	createdAt: Date | null;
 
-	@Column()
-	category: string;
+	@Column({ type: 'enum', enum: CATEGORIES })
+	category: Category;
 
 	@OneToMany(
 		() => ArticleLike,
 		(like) => like.article,
 	)
 	likes: ArticleLike[];
+
+	@ManyToOne(() => User, { eager: true, nullable: false })
+	createdBy: User;
 
 	constructor(
 		url: string,
@@ -42,7 +48,8 @@ export class Article {
 		tags: string[],
 		author: string | null,
 		createdAt: Date | null,
-		category: string,
+		category: Category,
+		createdBy: User,
 	) {
 		this.url = url;
 		this.id = id;
@@ -52,6 +59,7 @@ export class Article {
 		this.author = author;
 		this.createdAt = createdAt;
 		this.category = category;
+		this.createdBy = createdBy;
 	}
 
 	static create(
@@ -61,19 +69,19 @@ export class Article {
 		tags: string[],
 		author: string,
 		createdAt: Date,
-		category: string,
+		category: Category,
+		createdBy: User,
 	): Article {
 		let date: Date | null = new Date(createdAt);
 		if (Number.isNaN(date.getTime())) {
 			date = null;
 		}
 		const id = generateBase62Id();
-		return new Article(url, id, title, summary, tags, author, date, category);
+		return new Article(url, id, title, summary, tags, author, date, category, createdBy);
 	}
 
-	toResponse(likedByMe: boolean) {
+	toResponse(likedByMe: boolean): ArticleResponse {
 		const likesCount = this.likes?.length ?? 0;
-
 		return {
 			id: this.id,
 			url: this.url,
@@ -85,6 +93,11 @@ export class Article {
 			category: this.category,
 			likes: likesCount,
 			likedByMe,
+			createdBy: {
+				id: this.createdBy.id,
+				username: this.createdBy.username,
+				avatarUrl: this.createdBy.avatarUrl ?? null,
+			},
 		};
 	}
 }

@@ -6,6 +6,8 @@ import { IWebContentScraper, WEB_CONTENT_SCRAPER } from 'src/scraper/interfaces/
 import { User } from 'src/user/entities/user.entity';
 import { generateBase62Id } from 'src/utils/base62';
 import { Repository } from 'typeorm';
+import { ArticleCreateInput } from './dto/article-create-input.dto';
+import { ArticleResponse } from './dto/article-response.dto';
 import { Article } from './entities/article.entity';
 import { ArticleLike } from './entities/article-like.entity';
 
@@ -29,12 +31,12 @@ export class ArticleService {
 		let exists = true;
 		do {
 			id = generateBase62Id();
-			exists = await this.articleRepository.exist({ where: { id } });
+			exists = await this.articleRepository.exists({ where: { id } });
 		} while (exists);
 		return id;
 	}
 
-	async analyzeUrl(url: string): Promise<Article> {
+	async analyzeUrl(url: string, createdBy: User): Promise<Article> {
 		const content = await this.webContentScraper.scrape(url);
 
 		const prompt = `너는 주어진 텍스트에서 핵심 정보를 추출하여 JSON 형식으로 반환하는 전문 분석가이자 프론트엔드 개발자야.
@@ -79,6 +81,7 @@ export class ArticleService {
 				analysis.author,
 				analysis.createdAt,
 				analysis.category,
+				createdBy,
 			);
 		} catch (error) {
 			console.error('articleService analyzeUrl json parse error:', error);
@@ -86,11 +89,39 @@ export class ArticleService {
 		}
 	}
 
-	async createArticle(url: string): Promise<Article> {
+	async createArticle(dto: ArticleCreateInput, userId?: number): Promise<ArticleResponse> {
+		const { url, title, summary, tags, author, category } = dto;
+		console.log('dto', dto);
 		const exists = await this.articleRepository.findOne({ where: { url } });
 		if (exists) throw new BadRequestException('이미 등록된 아티클입니다.');
-		const article = await this.analyzeUrl(url);
-		return this.articleRepository.save(article);
+		let user: User | undefined;
+		if (userId) {
+			const found = await this.userRepository.findOne({ where: { id: userId } });
+			user = found ?? undefined;
+		}
+		if (!user) throw new BadRequestException('유효하지 않은 사용자입니다.');
+		const article = new Article(
+			url,
+			await this.generateUniqueId(),
+			title,
+			summary,
+			tags,
+			author,
+			new Date(),
+			category,
+			user,
+		);
+		const savedArticle = await this.articleRepository.save(article);
+		if (user) {
+			const like = this.articleLikeRepository.create({ article: savedArticle, user });
+			await this.articleLikeRepository.save(like);
+		}
+		const articleWithLikes = await this.articleRepository.findOne({
+			where: { id: savedArticle.id },
+			relations: ['likes', 'likes.user', 'createdBy'],
+		});
+		if (!articleWithLikes) throw new NotFoundException('Article not found');
+		return articleWithLikes.toResponse(true);
 	}
 
 	async likeArticle(id: string, userId: number) {
@@ -126,7 +157,7 @@ export class ArticleService {
 		if (!userId) {
 			const article = await this.articleRepository.findOne({
 				where: { id: articleId },
-				relations: ['likes', 'likes.user'],
+				relations: ['likes', 'likes.user', 'createdBy'],
 			});
 			if (!article) throw new NotFoundException('Article not found');
 			return article.toResponse(false);
@@ -137,6 +168,7 @@ export class ArticleService {
 			.createQueryBuilder('article')
 			.leftJoinAndSelect('article.likes', 'like')
 			.leftJoinAndSelect('like.user', 'user')
+			.leftJoinAndSelect('article.createdBy', 'createdBy')
 			.where('article.id = :articleId', { articleId })
 			.addSelect(
 				(qb) =>
@@ -155,22 +187,23 @@ export class ArticleService {
 		return entity.toResponse(likedByMe);
 	}
 
-	async getAllArticles(userId?: number) {
+	async getAllArticles(userId?: number): Promise<ArticleResponse[]> {
 		if (!userId) {
 			const articles = await this.articleRepository.find({
-				relations: ['likes', 'likes.user'],
+				relations: ['likes', 'likes.user', 'createdBy'],
 				order: { createdAt: 'DESC' },
 			});
 			return articles.map((article) => article.toResponse(false));
 		}
 
 		// userId가 실제로 존재하는지 체크
-		const userExists = await this.userRepository.exist({ where: { id: userId } });
+		const userExists = await this.userRepository.exists({ where: { id: userId } });
 		if (!userExists) {
 			const articles = await this.articleRepository.find({
-				relations: ['likes', 'likes.user'],
+				relations: ['likes', 'likes.user', 'createdBy'],
 				order: { createdAt: 'DESC' },
 			});
+			console.log('articles', articles);
 			return articles.map((article) => article.toResponse(false));
 		}
 
@@ -178,6 +211,7 @@ export class ArticleService {
 			.createQueryBuilder('article')
 			.leftJoinAndSelect('article.likes', 'like')
 			.leftJoinAndSelect('like.user', 'user')
+			.leftJoinAndSelect('article.createdBy', 'createdBy')
 			.orderBy('article.createdAt', 'DESC')
 			.addSelect('article.id', 'article_id')
 			.addSelect((qb) => {

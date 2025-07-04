@@ -10,6 +10,7 @@ import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecas
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
 import { GetArticleUseCase } from './use-cases/get-article.usecase';
+import { GetLikedArticlesUseCase } from './use-cases/get-liked-articles.usecase';
 import { LikeArticleUseCase } from './use-cases/like-article.usecase';
 import { UnlikeArticleUseCase } from './use-cases/unlike-article.usecase';
 
@@ -23,6 +24,7 @@ import { UnlikeArticleUseCase } from './use-cases/unlike-article.usecase';
 		GetArticleUseCase,
 		LikeArticleUseCase,
 		UnlikeArticleUseCase,
+		GetLikedArticlesUseCase,
 	],
 })
 export class ArticleModule {}

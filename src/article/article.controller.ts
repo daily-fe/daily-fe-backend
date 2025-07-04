@@ -22,6 +22,7 @@ import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecas
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
 import { GetArticleUseCase } from './use-cases/get-article.usecase';
+import { GetLikedArticlesUseCase } from './use-cases/get-liked-articles.usecase';
 import { LikeArticleUseCase } from './use-cases/like-article.usecase';
 import { UnlikeArticleUseCase } from './use-cases/unlike-article.usecase';
 
@@ -35,6 +36,7 @@ export class ArticleController {
 		private readonly getArticleWithLikesUseCase: GetArticleUseCase,
 		private readonly likeArticleUseCase: LikeArticleUseCase,
 		private readonly unlikeArticleUseCase: UnlikeArticleUseCase,
+		private readonly getLikedArticlesUseCase: GetLikedArticlesUseCase,
 	) {}
 
 	@Post('analyze')
@@ -61,6 +63,14 @@ export class ArticleController {
 	async getAllArticles(@Query() input: ArticleGetAllInputDto, @Req() req) {
 		const userId = req.user?.id;
 		return this.getAllArticlesUseCase.execute(input, userId);
+	}
+
+	@Get('liked')
+	@UseGuards(JwtAuthGuard)
+	async getLikedArticles(@Req() req) {
+		const userId = req.user?.id;
+		console.log('userId', userId);
+		return this.getLikedArticlesUseCase.execute(userId);
 	}
 
 	@Get(':id')

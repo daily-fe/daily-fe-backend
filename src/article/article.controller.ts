@@ -6,6 +6,7 @@ import {
 	Get,
 	Param,
 	Post,
+	Query,
 	Req,
 	UseGuards,
 	UseInterceptors,
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt.strategy';
 import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
 import { AnalyzeArticleUrlDto } from './dto/analyze-article-url.dto';
 import { ArticleCreateInput } from './dto/article-create-input.dto';
+import { ArticleGetAllInputDto } from './dto/article-get-all-input.dto';
 import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecase';
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
@@ -56,9 +58,9 @@ export class ArticleController {
 	@Get()
 	@Public()
 	@UseGuards(OptionalAuthGuard)
-	async getAllArticles(@Req() req) {
+	async getAllArticles(@Query() input: ArticleGetAllInputDto, @Req() req) {
 		const userId = req.user?.id;
-		return this.getAllArticlesUseCase.execute(userId);
+		return this.getAllArticlesUseCase.execute(input, userId);
 	}
 
 	@Get(':id')

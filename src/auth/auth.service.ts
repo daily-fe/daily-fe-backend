@@ -60,6 +60,7 @@ export class AuthService {
 			accessToken,
 			refreshToken,
 			accessTokenExpires,
+			user,
 		};
 	}
 

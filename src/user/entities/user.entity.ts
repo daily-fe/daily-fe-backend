@@ -23,6 +23,9 @@ export class User {
 	@Column({ nullable: true })
 	avatarUrl: string;
 
+	@Column({ nullable: true })
+	nickname: string;
+
 	@Column({
 		enum: Role,
 		default: Role.user,

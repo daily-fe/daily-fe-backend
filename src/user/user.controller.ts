@@ -1,10 +1,17 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth/guard/auth.guard';
+import { UserUpdateInputDto } from './dto/user-update-input.dto';
 import { User } from './entities/user.entity';
+import { UpdateUserUseCase } from './services/update-user.usecase';
 import { UserService } from './services/user.service';
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UserController {
-	constructor(private readonly userService: UserService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly updateUserUseCase: UpdateUserUseCase,
+	) {}
 
 	@Get()
 	async findAll(): Promise<User[]> {
@@ -22,7 +29,14 @@ export class UserController {
 	}
 
 	@Post('update')
-	async update(@Body() userData: Partial<User>, @Req() req: Request): Promise<User> {
-		return this.userService.update({ ...userData, id: req['user'].id });
+	async update(@Body() userData: Partial<User>, @Req() req): Promise<User> {
+		const userId = req.user.id;
+		return this.userService.update({ ...userData, id: userId });
+	}
+
+	@Patch('me')
+	async updateMe(@Req() req, @Body() input: UserUpdateInputDto) {
+		const userId = req.user.id;
+		return this.updateUserUseCase.execute(userId, input);
 	}
 }

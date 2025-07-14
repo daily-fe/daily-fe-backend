@@ -27,13 +27,13 @@ export class WebContentScraperService {
 	}
 
 	async getArticles(): Promise<ArticleSummary[]> {
-		const feeds = await this.feedRepository.find({ order: { publishedAt: 'DESC' } });
-		return feeds.map((feed) => ({
-			title: feed.title,
-			url: feed.url,
-			publishedAt: feed.publishedAt ? feed.publishedAt.toISOString() : undefined,
-			site: feed.site,
-		}));
+		const results = await Promise.all(this.scrapers.map((scraper) => scraper.scrapeFeeds()));
+		return results.flat().sort((a, b) => {
+			if (!a.publishedAt && !b.publishedAt) return 0;
+			if (!a.publishedAt) return 1;
+			if (!b.publishedAt) return -1;
+			return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+		});
 	}
 
 	async scrapePageContent(url: string): Promise<string> {

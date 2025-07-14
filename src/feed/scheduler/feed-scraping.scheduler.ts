@@ -8,7 +8,8 @@ export class FeedScrapingScheduler {
 
 	constructor(private readonly scrapeAndSaveFeedsUseCase: ScrapeAndSaveFeedsUseCase) {}
 
-	@Cron('0 0 * * *')
+	// @Cron('0 0 * * *')
+	@Cron('* * * * *')
 	async handleCron() {
 		this.logger.log('⏰ [Scheduler] 피드 스크래핑 및 저장 시작');
 		try {

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { RSS_FEEDS } from '../config/rss-feeds';
+import { FeedSource } from 'src/feed/entities/feed-source.entity';
+import { Repository } from 'typeorm';
 import { ArticleSummary, IWebFeedScraper } from '../interfaces/web-content-scraper.interface';
 import { parseFeed } from './feed-parser';
 
@@ -12,9 +14,15 @@ const AXIOS_HEADERS = {
 
 @Injectable()
 export class GenericFeedScraperService implements IWebFeedScraper {
+	constructor(
+		@InjectRepository(FeedSource)
+		private readonly feedSourceRepository: Repository<FeedSource>,
+	) {}
+
 	async scrapeFeeds(): Promise<ArticleSummary[]> {
 		const allArticles: ArticleSummary[] = [];
-		for (const feed of RSS_FEEDS) {
+		const feedSources = await this.feedSourceRepository.find({ where: { isActive: true } });
+		for (const feed of feedSources) {
 			try {
 				const res = await axios.get(feed.url, { headers: AXIOS_HEADERS });
 				const articles = parseFeed(res.data)

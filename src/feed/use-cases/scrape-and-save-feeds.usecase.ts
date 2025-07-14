@@ -4,7 +4,6 @@ import { ArticleSummary, WEB_CONTENT_SCRAPER } from 'src/scraper/interfaces/web-
 import { WebContentScraperService } from 'src/scraper/services/web-content-scraper.service';
 import { Repository } from 'typeorm';
 import { Feed } from '../entities/feed.entity';
-import { SiteEnum } from '../enums/site.enum';
 
 @Injectable()
 export class ScrapeAndSaveFeedsUseCase {

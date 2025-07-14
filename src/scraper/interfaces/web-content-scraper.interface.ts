@@ -1,5 +1,3 @@
-import { SiteEnum } from 'src/feed/enums/site.enum';
-
 export const WEB_CONTENT_SCRAPER = 'IWebContentScraper';
 export const WEB_FEED_SCRAPER = 'IWebFeedScraper';
 
@@ -15,5 +13,5 @@ export interface ArticleSummary {
 	title: string;
 	url: string;
 	publishedAt?: string;
-	site: SiteEnum;
+	site?: string;
 }

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -71,6 +71,7 @@ import { UserModule } from './user/user.module';
 	controllers: [],
 	providers: [
 		AppService,
+		Logger,
 		{
 			provide: APP_GUARD,
 			useClass: AuthGuard,

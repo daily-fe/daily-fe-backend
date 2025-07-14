@@ -4,9 +4,10 @@ import { ScrapeAndSaveFeedsUseCase } from '../use-cases/scrape-and-save-feeds.us
 
 @Injectable()
 export class FeedScrapingScheduler {
-	private readonly logger = new Logger(FeedScrapingScheduler.name);
-
-	constructor(private readonly scrapeAndSaveFeedsUseCase: ScrapeAndSaveFeedsUseCase) {}
+	constructor(
+		private readonly scrapeAndSaveFeedsUseCase: ScrapeAndSaveFeedsUseCase,
+		private readonly logger: Logger,
+	) {}
 
 	@Cron('0 0 * * *')
 	async handleCron() {

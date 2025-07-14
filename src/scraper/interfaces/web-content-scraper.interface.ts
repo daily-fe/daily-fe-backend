@@ -1,5 +1,12 @@
 export const WEB_CONTENT_SCRAPER = 'IWebContentScraper';
 
-export interface IWebContentScraper {
-	scrape(url: string): Promise<string>;
+export interface WebContentScraper {
+	fetchLatestArticles(): Promise<ArticleSummary[]>;
+}
+
+export interface ArticleSummary {
+	title: string;
+	url: string;
+	publishedAt?: string;
+	site: string;
 }

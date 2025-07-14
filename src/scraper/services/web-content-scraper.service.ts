@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { ArticleSummary, IWebFeedScraper } from '../interfaces/web-content-scraper.interface';
+import { ArticleSummary, IWebFeedScraper, WEB_FEED_SCRAPER } from '../interfaces/web-content-scraper.interface';
 
 @Injectable()
 export class WebContentScraperService {
-	constructor(private readonly genericFeedScraper: IWebFeedScraper) {}
+	constructor(
+		@Inject(WEB_FEED_SCRAPER)
+		private readonly genericFeedScraper: IWebFeedScraper,
+	) {}
 
 	private scrapers: IWebFeedScraper[];
 
@@ -15,7 +18,12 @@ export class WebContentScraperService {
 
 	async getArticles(): Promise<ArticleSummary[]> {
 		const results = await Promise.all(this.scrapers.map((scraper) => scraper.getArticles()));
-		return results.flat();
+		return results.flat().sort((a, b) => {
+			if (!a.publishedAt && !b.publishedAt) return 0;
+			if (!a.publishedAt) return 1;
+			if (!b.publishedAt) return -1;
+			return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+		});
 	}
 
 	async scrape(url: string): Promise<string> {

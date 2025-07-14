@@ -3,6 +3,8 @@ export enum RSS_FEED_SITE {
 	MUSINSA_TECH = 'MUSINSA Tech',
 	DAANGN = 'Daangn',
 	BANKSALAD = 'Banksalad',
+	GITHUB = 'Github',
+	SPOTIFY = 'SPOTIFY',
 }
 
 // TODO: DB로 이동 필요
@@ -22,5 +24,13 @@ export const RSS_FEEDS = [
 	{
 		site: RSS_FEED_SITE.BANKSALAD,
 		url: 'https://blog.banksalad.com/rss.xml',
+	},
+	{
+		site: RSS_FEED_SITE.GITHUB,
+		url: 'https://github.blog/news-insights/research/feed/',
+	},
+	{
+		site: RSS_FEED_SITE.SPOTIFY,
+		url: 'https://engineering.atspotify.com/feed',
 	},
 ];

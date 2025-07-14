@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { ArticleResponse } from '../dto/article-response.dto';
 import { Article } from '../entities/article.entity';
 import { ArticleLike } from '../entities/article-like.entity';
 
@@ -16,14 +17,25 @@ export class LikeArticleUseCase {
 		private readonly userRepository: Repository<User>,
 	) {}
 
-	async execute(id: string, userId: number): Promise<void> {
-		const article = await this.articleRepository.findOne({ where: { id } });
+	async execute(id: string, userId: number): Promise<ArticleResponse> {
+		const article = await this.articleRepository.findOne({
+			where: { id },
+			relations: ['likes', 'likes.user', 'createdBy'],
+		});
 		if (!article) throw new NotFoundException('Article not found');
 		const user = await this.userRepository.findOne({ where: { id: userId } });
 		if (!user) throw new NotFoundException('User not found');
 		const alreadyLiked = await this.articleLikeRepository.findOne({ where: { article, user } });
-		if (alreadyLiked) return;
-		const like = this.articleLikeRepository.create({ article, user });
-		await this.articleLikeRepository.save(like);
+		if (!alreadyLiked) {
+			const like = this.articleLikeRepository.create({ article, user });
+			await this.articleLikeRepository.save(like);
+		}
+		// 좋아요 반영된 최신 Article 조회
+		const updatedArticle = await this.articleRepository.findOne({
+			where: { id },
+			relations: ['likes', 'likes.user', 'createdBy'],
+		});
+		if (!updatedArticle) throw new NotFoundException('Article not found');
+		return updatedArticle.toResponse(true);
 	}
 }

@@ -18,6 +18,7 @@ import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
 import { AnalyzeArticleUrlDto } from './dto/analyze-article-url.dto';
 import { ArticleCreateInput } from './dto/article-create-input.dto';
 import { ArticleGetAllInputDto } from './dto/article-get-all-input.dto';
+import { ArticleResponse } from './dto/article-response.dto';
 import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecase';
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
@@ -44,7 +45,7 @@ export class ArticleController {
 	async analyzeArticleWebsite(
 		@Body(new ValidationPipe({ transform: true })) analyzeArticleUrlDto: AnalyzeArticleUrlDto,
 		@Req() req,
-	) {
+	): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		const result = await this.analyzeArticleUrlUseCase.execute(analyzeArticleUrlDto.url, userId);
 		return result.toResponse(false);
@@ -52,7 +53,7 @@ export class ArticleController {
 
 	@Post()
 	@UseGuards(JwtAuthGuard)
-	async createArticle(@Body() dto: ArticleCreateInput, @Req() req) {
+	async createArticle(@Body() dto: ArticleCreateInput, @Req() req): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		return this.createArticleUseCase.execute(dto, userId);
 	}
@@ -60,14 +61,14 @@ export class ArticleController {
 	@Get()
 	@Public()
 	@UseGuards(OptionalAuthGuard)
-	async getAllArticles(@Query() input: ArticleGetAllInputDto, @Req() req) {
+	async getAllArticles(@Query() input: ArticleGetAllInputDto, @Req() req): Promise<ArticleResponse[]> {
 		const userId = req.user?.id;
 		return this.getAllArticlesUseCase.execute(input, userId);
 	}
 
 	@Get('liked')
 	@UseGuards(JwtAuthGuard)
-	async getLikedArticles(@Req() req) {
+	async getLikedArticles(@Req() req): Promise<ArticleResponse[]> {
 		const userId = req.user?.id;
 		console.log('userId', userId);
 		return this.getLikedArticlesUseCase.execute(userId);
@@ -75,19 +76,19 @@ export class ArticleController {
 
 	@Get(':id')
 	@UseGuards(OptionalAuthGuard)
-	async getArticle(@Param('id') id: string, @Req() req) {
+	async getArticle(@Param('id') id: string, @Req() req): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		return this.getArticleWithLikesUseCase.execute(id, userId);
 	}
 
 	@Post(':id/like')
-	async likeArticle(@Param('id') id: string, @Req() req) {
+	async likeArticle(@Param('id') id: string, @Req() req): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		return this.likeArticleUseCase.execute(id, userId);
 	}
 
 	@Delete(':id/like')
-	async unlikeArticle(@Param('id') id: string, @Req() req) {
+	async unlikeArticle(@Param('id') id: string, @Req() req): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		return this.unlikeArticleUseCase.execute(id, userId);
 	}

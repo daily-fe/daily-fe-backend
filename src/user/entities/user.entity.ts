@@ -2,8 +2,8 @@ import { ArticleLike } from 'src/article/entities/article-like.entity';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export enum Role {
-	admin,
-	user,
+	ADMIN = 'admin',
+	USER = 'user',
 }
 
 @Entity()
@@ -28,7 +28,7 @@ export class User {
 
 	@Column({
 		enum: Role,
-		default: Role.user,
+		default: Role.USER,
 	})
 	role: Role;
 

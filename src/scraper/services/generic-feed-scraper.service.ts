@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RSS_FEEDS } from '../config/rss-feeds';
-import { ArticleSummary, WebContentScraper } from '../interfaces/web-content-scraper.interface';
+import { ArticleSummary, IWebFeedScraper } from '../interfaces/web-content-scraper.interface';
 import { parseFeed } from './feed-parser';
 
 const AXIOS_HEADERS = {
@@ -11,8 +11,8 @@ const AXIOS_HEADERS = {
 };
 
 @Injectable()
-export class GenericFeedScraperService implements WebContentScraper {
-	async fetchLatestArticles(): Promise<ArticleSummary[]> {
+export class GenericFeedScraperService implements IWebFeedScraper {
+	async getArticles(): Promise<ArticleSummary[]> {
 		const allArticles: ArticleSummary[] = [];
 		for (const feed of RSS_FEEDS) {
 			try {

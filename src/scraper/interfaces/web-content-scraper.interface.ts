@@ -5,7 +5,7 @@ export interface IWebContentScraper extends IWebFeedScraper {
 }
 
 export interface IWebFeedScraper {
-	fetchLatestArticles(): Promise<ArticleSummary[]>;
+	getArticles(): Promise<ArticleSummary[]>;
 }
 
 export interface ArticleSummary {

@@ -9,6 +9,6 @@ export class ScraperController {
 	@Public()
 	@Get('latest-articles')
 	async getAllLatestArticles() {
-		return await this.scraperService.fetchAllLatestArticles();
+		return await this.scraperService.getArticles();
 	}
 }

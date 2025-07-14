@@ -1,10 +1,23 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { IWebContentScraper } from '../interfaces/web-content-scraper.interface';
+import { ArticleSummary, IWebFeedScraper } from '../interfaces/web-content-scraper.interface';
 
 @Injectable()
-export class WebContentScraperService implements IWebContentScraper {
+export class WebContentScraperService {
+	constructor(private readonly genericFeedScraper: IWebFeedScraper) {}
+
+	private scrapers: IWebFeedScraper[];
+
+	onModuleInit() {
+		this.scrapers = [this.genericFeedScraper];
+	}
+
+	async getArticles(): Promise<ArticleSummary[]> {
+		const results = await Promise.all(this.scrapers.map((scraper) => scraper.getArticles()));
+		return results.flat();
+	}
+
 	async scrape(url: string): Promise<string> {
 		try {
 			const { data: html } = await axios.get(url, {

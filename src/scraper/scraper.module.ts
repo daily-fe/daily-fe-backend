@@ -1,14 +1,11 @@
 import { Module } from '@nestjs/common';
-import { WEB_CONTENT_SCRAPER } from './interfaces/web-content-scraper.interface';
+import { ScraperController } from './scraper.controller';
+import { GenericFeedScraperService } from './services/generic-feed-scraper.service';
 import { WebContentScraperService } from './services/web-content-scraper.service';
 
 @Module({
-	providers: [
-		{
-			provide: WEB_CONTENT_SCRAPER,
-			useClass: WebContentScraperService,
-		},
-	],
-	exports: [WEB_CONTENT_SCRAPER],
+	providers: [WebContentScraperService, GenericFeedScraperService],
+	controllers: [ScraperController],
+	exports: [WebContentScraperService],
 })
 export class ScraperModule {}

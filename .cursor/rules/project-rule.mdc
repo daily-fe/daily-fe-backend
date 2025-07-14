@@ -1,0 +1,33 @@
+# 프로젝트 클린 아키텍처 규칙
+
+## 1. 계층 구조 및 의존성 원칙
+- Controller → UseCase → Repository/외부 API/Service 구조로 통일
+- Controller는 반드시 UseCase만 의존한다 (Repository, Service 직접 의존 금지)
+- UseCase는 TypeORM Repository, 외부 API, 필요한 Service만 직접 주입받아 사용한다
+- Service 계층은 복잡한 도메인/인프라 로직이 여러 UseCase에서 재사용될 때만 도입한다
+- Repository는 TypeORM의 Repository를 직접 사용하며, 별도의 interface/impl 분리는 하지 않는다
+
+## 2. 파일/디렉터리 구조
+- 각 도메인별로 use-cases/, entities/, controllers/, services/ 등으로 구분
+- UseCase는 1유스케이스 1클래스 원칙(단일 책임 원칙)
+- Service는 필요한 경우에만 존재하며, 대부분의 비즈니스 로직은 UseCase에 집중
+
+## 3. Logger 및 공통 인프라
+- Logger는 AppModule에서 글로벌 provider로 등록하고, 각 서비스/유스케이스에서 DI로 주입받아 사용한다
+- 불필요한 provider/exports 등록은 금지, 실제로 필요한 것만 명시
+
+## 4. 모듈 구성
+- 각 모듈은 실제로 필요한 UseCase/Service/Entity만 provider/exports에 등록
+- Controller는 반드시 UseCase만 주입받는다
+
+## 5. 기타
+- 테스트, 확장성, 유지보수성을 고려하여 구조를 지속적으로 점검/개선한다
+- 외부 API/인프라 연동은 UseCase에서 직접 호출하거나, 필요시 Service로 분리
+
+---
+
+이 규칙을 모든 신규/기존 코드에 일관되게 적용한다.
+description:
+globs:
+alwaysApply: false
+---

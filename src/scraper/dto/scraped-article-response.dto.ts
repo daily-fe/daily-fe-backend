@@ -1,13 +1,15 @@
-export class ScrapedArticleResponseDto {
-  title: string;
-  url: string;
-  publishedAt?: string;
-  site?: string;
+import { ArticleSummary } from '../interfaces/web-content-scraper.interface';
 
-  constructor(article: any) {
-    this.title = article.title;
-    this.url = article.url;
-    this.publishedAt = article.publishedAt;
-    this.site = article.site;
-  }
+export class ScrapedArticleResponseDto {
+	title: string;
+	url: string;
+	publishedAt?: string;
+	site?: string;
+
+	constructor(article: ArticleSummary) {
+		this.title = article.title;
+		this.url = article.url;
+		this.publishedAt = article.publishedAt;
+		this.site = article.site;
+	}
 }

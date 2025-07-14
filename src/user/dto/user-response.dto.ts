@@ -1,4 +1,4 @@
-import { Role } from '../entities/user.entity';
+import { Role, User } from '../entities/user.entity';
 
 export class UserResponseDto {
 	id: number;
@@ -11,7 +11,7 @@ export class UserResponseDto {
 	createdAt: Date;
 	updatedAt: Date;
 
-	constructor(user: any) {
+	constructor(user: User) {
 		this.id = user.id;
 		this.githubId = user.githubId;
 		this.username = user.username;

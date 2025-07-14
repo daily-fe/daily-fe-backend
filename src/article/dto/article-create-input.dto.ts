@@ -1,6 +1,6 @@
 import { Category } from '../constants';
 
-export interface ArticleCreateInput {
+export class ArticleCreateInput {
 	url: string;
 	title: string;
 	summary: string;

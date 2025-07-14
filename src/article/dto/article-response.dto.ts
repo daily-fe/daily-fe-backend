@@ -1,4 +1,4 @@
-export interface ArticleResponse {
+export class ArticleResponse {
 	id: string;
 	url: string;
 	title: string;

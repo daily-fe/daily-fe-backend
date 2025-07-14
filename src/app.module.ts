@@ -11,6 +11,7 @@ import { ArticleLike } from './article/entities/article-like.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/guard/auth.guard';
 import { BearerTokenMiddleware } from './auth/middleware/beare-token.middleware';
+import { FeedModule } from './feed/feed.module';
 import { GeminiModule } from './gemini/gemini.module';
 import { ScraperModule } from './scraper/scraper.module';
 import { User } from './user/entities/user.entity';
@@ -63,6 +64,7 @@ import { UserModule } from './user/user.module';
 		ArticleModule,
 		UserModule,
 		AuthModule,
+		FeedModule,
 	],
 	controllers: [],
 	providers: [

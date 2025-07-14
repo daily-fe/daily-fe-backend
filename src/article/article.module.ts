@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GeminiModule } from 'src/gemini/gemini.module';
 import { ScraperModule } from 'src/scraper/scraper.module';
@@ -15,7 +16,12 @@ import { LikeArticleUseCase } from './use-cases/like-article.usecase';
 import { UnlikeArticleUseCase } from './use-cases/unlike-article.usecase';
 
 @Module({
-	imports: [ScraperModule, GeminiModule, TypeOrmModule.forFeature([Article, ArticleLike, User])],
+	imports: [
+		ScraperModule,
+		GeminiModule,
+		TypeOrmModule.forFeature([Article, ArticleLike, User]),
+		ScheduleModule.forRoot(),
+	],
 	controllers: [ArticleController],
 	providers: [
 		CreateArticleUseCase,

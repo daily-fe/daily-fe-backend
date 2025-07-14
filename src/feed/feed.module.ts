@@ -8,14 +8,35 @@ import { FeedSource } from './entities/feed-source.entity';
 import { FeedController } from './feed.controller';
 import { FeedSourceController } from './feed-source.controller';
 import { FeedScrapingScheduler } from './scheduler/feed-scraping.scheduler';
-import { FeedSourceService } from './services/feed-source.service';
+import { CreateFeedSourceUseCase } from './use-cases/feed-source/create-feed-source.usecase';
+import { FindAllFeedSourcesUseCase } from './use-cases/feed-source/find-all-feed-sources.usecase';
+import { RemoveFeedSourceUseCase } from './use-cases/feed-source/remove-feed-source.usecase';
+import { UpdateFeedSourceUseCase } from './use-cases/feed-source/update-feed-source.usecase';
 import { GetAllFeedsUseCase } from './use-cases/get-all-feeds.usecase';
 import { ScrapeAndSaveFeedsUseCase } from './use-cases/scrape-and-save-feeds.usecase';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Feed, FeedSource, User]), ScraperModule, UserModule],
-	providers: [ScrapeAndSaveFeedsUseCase, FeedScrapingScheduler, GetAllFeedsUseCase, Logger, FeedSourceService],
+	providers: [
+		ScrapeAndSaveFeedsUseCase,
+		FeedScrapingScheduler,
+		GetAllFeedsUseCase,
+		Logger,
+		FindAllFeedSourcesUseCase,
+		CreateFeedSourceUseCase,
+		UpdateFeedSourceUseCase,
+		RemoveFeedSourceUseCase,
+	],
 	controllers: [FeedController, FeedSourceController],
-	exports: [],
+	exports: [
+		ScrapeAndSaveFeedsUseCase,
+		FeedScrapingScheduler,
+		GetAllFeedsUseCase,
+		Logger,
+		FindAllFeedSourcesUseCase,
+		CreateFeedSourceUseCase,
+		UpdateFeedSourceUseCase,
+		RemoveFeedSourceUseCase,
+	],
 })
 export class FeedModule {}

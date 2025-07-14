@@ -12,7 +12,8 @@ export class ScraperController {
 
 	@Public()
 	@Get('latest-articles')
+	// DB에서 최신 기사 목록 반환
 	async getAllLatestArticles() {
-		return await this.scraperService.getArticles();
+		return await this.scraperService.scrapeFeeds();
 	}
 }

@@ -1,6 +1,9 @@
 import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { Feed } from 'src/feed/entities/feed.entity';
+import { Repository } from 'typeorm';
 import { ArticleSummary, IWebFeedScraper, WEB_FEED_SCRAPER } from '../interfaces/web-content-scraper.interface';
 
 @Injectable()
@@ -8,6 +11,8 @@ export class WebContentScraperService {
 	constructor(
 		@Inject(WEB_FEED_SCRAPER)
 		private readonly genericFeedScraper: IWebFeedScraper,
+		@InjectRepository(Feed)
+		private readonly feedRepository: Repository<Feed>,
 	) {}
 
 	private scrapers: IWebFeedScraper[];
@@ -16,17 +21,22 @@ export class WebContentScraperService {
 		this.scrapers = [this.genericFeedScraper];
 	}
 
-	async getArticles(): Promise<ArticleSummary[]> {
-		const results = await Promise.all(this.scrapers.map((scraper) => scraper.getArticles()));
-		return results.flat().sort((a, b) => {
-			if (!a.publishedAt && !b.publishedAt) return 0;
-			if (!a.publishedAt) return 1;
-			if (!b.publishedAt) return -1;
-			return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-		});
+	async scrapeFeeds(): Promise<ArticleSummary[]> {
+		const results = await Promise.all(this.scrapers.map((scraper) => scraper.scrapeFeeds()));
+		return results.flat();
 	}
 
-	async scrape(url: string): Promise<string> {
+	async getArticles(): Promise<ArticleSummary[]> {
+		const feeds = await this.feedRepository.find({ order: { publishedAt: 'DESC' } });
+		return feeds.map((feed) => ({
+			title: feed.title,
+			url: feed.url,
+			publishedAt: feed.publishedAt ? feed.publishedAt.toISOString() : undefined,
+			site: feed.site,
+		}));
+	}
+
+	async scrapePageContent(url: string): Promise<string> {
 		try {
 			const { data: html } = await axios.get(url, {
 				headers: {

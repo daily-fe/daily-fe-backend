@@ -12,7 +12,7 @@ const AXIOS_HEADERS = {
 
 @Injectable()
 export class GenericFeedScraperService implements IWebFeedScraper {
-	async getArticles(): Promise<ArticleSummary[]> {
+	async scrapeFeeds(): Promise<ArticleSummary[]> {
 		const allArticles: ArticleSummary[] = [];
 		for (const feed of RSS_FEEDS) {
 			try {

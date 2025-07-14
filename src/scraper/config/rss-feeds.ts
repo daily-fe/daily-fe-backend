@@ -1,36 +1,29 @@
-export enum RSS_FEED_SITE {
-	LINE_ENGINEERING = 'LINE Engineering',
-	MUSINSA_TECH = 'MUSINSA Tech',
-	DAANGN = 'Daangn',
-	BANKSALAD = 'Banksalad',
-	GITHUB = 'Github',
-	SPOTIFY = 'SPOTIFY',
-}
+import { SiteEnum } from 'src/feed/enums/site.enum';
 
 // TODO: DB로 이동 필요
 export const RSS_FEEDS = [
 	{
-		site: RSS_FEED_SITE.LINE_ENGINEERING,
+		site: SiteEnum.LINE_ENGINEERING,
 		url: 'https://techblog.lycorp.co.jp/ko/feed/index.xml',
 	},
 	{
-		site: RSS_FEED_SITE.MUSINSA_TECH,
+		site: SiteEnum.MUSINSA_TECH,
 		url: 'https://medium.com/feed/musinsa-tech',
 	},
 	{
-		site: RSS_FEED_SITE.DAANGN,
+		site: SiteEnum.DAANGN,
 		url: 'https://medium.com/feed/daangn',
 	},
 	{
-		site: RSS_FEED_SITE.BANKSALAD,
+		site: SiteEnum.BANKSALAD,
 		url: 'https://blog.banksalad.com/rss.xml',
 	},
 	{
-		site: RSS_FEED_SITE.GITHUB,
+		site: SiteEnum.GITHUB,
 		url: 'https://github.blog/news-insights/research/feed/',
 	},
 	{
-		site: RSS_FEED_SITE.SPOTIFY,
+		site: SiteEnum.SPOTIFY,
 		url: 'https://engineering.atspotify.com/feed',
 	},
 ];

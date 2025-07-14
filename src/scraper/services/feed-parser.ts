@@ -11,7 +11,7 @@ export function parseFeed(xml: string): ArticleSummary[] {
 	} else if (json.feed) {
 		return parseAtom(json.feed);
 	}
-	throw new Error('Unknown feed format');
+	throw new Error('알 수 없는 피드 형식입니다.');
 }
 
 function parseRss(rss: any): ArticleSummary[] {

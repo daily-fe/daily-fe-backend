@@ -11,6 +11,8 @@ import { ArticleLike } from './article/entities/article-like.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/guard/auth.guard';
 import { BearerTokenMiddleware } from './auth/middleware/beare-token.middleware';
+import { Feed } from './feed/entities/feed.entity';
+import { FeedSource } from './feed/entities/feed-source.entity';
 import { FeedModule } from './feed/feed.module';
 import { GeminiModule } from './gemini/gemini.module';
 import { ScraperModule } from './scraper/scraper.module';
@@ -48,7 +50,7 @@ import { UserModule } from './user/user.module';
 				autoLoadEntities: true,
 				// TODO 개발 환경에서만 true
 				synchronize: true,
-				entities: [User, Article, ArticleLike],
+				entities: [User, Article, ArticleLike, Feed, FeedSource],
 			}),
 		}),
 		JwtModule.registerAsync({

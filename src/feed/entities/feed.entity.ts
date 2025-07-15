@@ -1,8 +1,11 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Feed {
-	@PrimaryColumn()
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
+
+	@Column()
 	url: string;
 
 	@Column()

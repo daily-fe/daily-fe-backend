@@ -1,5 +1,5 @@
 import { User } from 'src/user/entities/user.entity';
-import { generateBase62Id } from 'src/utils/base62';
+import { generateBase62Id } from 'src/utils/base62.util';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { CATEGORIES, Category } from '../constants';
 import { ArticleResponse } from '../dto/article-response.dto';

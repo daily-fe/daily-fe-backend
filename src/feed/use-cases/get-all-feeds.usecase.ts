@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { decodeGenericCursor, encodeGenericCursor } from '../../utils/cursor.util';
 import { CursorPaginationResponseDto } from '../../utils/cursor-pagination.dto';
 import { FeedResponseDto } from '../dto/feed-response.dto';
 import { GetAllFeedsCursorInputDto } from '../dto/get-all-feeds-cursor-input.dto';
@@ -18,15 +19,7 @@ export class GetAllFeedsUseCase {
 
 		const qb = this.feedRepository.createQueryBuilder('feed');
 
-		let parsedCursor: { publishedAt: string; id: string } | undefined;
-		if (cursor) {
-			try {
-				const jsonStr = Buffer.from(cursor, 'base64').toString('utf-8');
-				parsedCursor = JSON.parse(jsonStr);
-			} catch (e) {
-				// invalid cursor, 무시
-			}
-		}
+		const parsedCursor = decodeGenericCursor<{ publishedAt: string; id: string }>(cursor);
 
 		if (parsedCursor) {
 			const { publishedAt, id } = parsedCursor;
@@ -55,9 +48,7 @@ export class GetAllFeedsUseCase {
 		if (feeds.length > 0) {
 			const last = feeds[feeds.length - 1];
 			if (last.publishedAt && last.id) {
-				const cursorObj = { publishedAt: last.publishedAt.toISOString(), id: last.id };
-				const jsonStr = JSON.stringify(cursorObj);
-				nextCursor = Buffer.from(jsonStr).toString('base64');
+				nextCursor = encodeGenericCursor(last, ['publishedAt', 'id']);
 			}
 		}
 

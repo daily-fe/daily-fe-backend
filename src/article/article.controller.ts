@@ -15,6 +15,7 @@ import {
 import { Public } from 'src/auth/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt.strategy';
 import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
+import { CursorPaginationResponseDto } from '../utils/cursor-pagination.dto';
 import { AnalyzeArticleUrlDto } from './dto/analyze-article-url.dto';
 import { ArticleCreateInput } from './dto/article-create-input.dto';
 import { ArticleGetAllInputDto } from './dto/article-get-all-input.dto';
@@ -61,7 +62,10 @@ export class ArticleController {
 	@Get()
 	@Public()
 	@UseGuards(OptionalAuthGuard)
-	async getAllArticles(@Query() input: ArticleGetAllInputDto, @Req() req): Promise<ArticleResponse[]> {
+	async getAllArticles(
+		@Query() input: ArticleGetAllInputDto,
+		@Req() req,
+	): Promise<CursorPaginationResponseDto<ArticleResponse>> {
 		const userId = req.user?.id;
 		return this.getAllArticlesUseCase.execute(input, userId);
 	}

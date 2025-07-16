@@ -42,8 +42,6 @@ export class GetAllFeedsUseCase {
 		const feeds = await qb.getMany();
 		const feedDtos = feeds.map((feed) => new FeedResponseDto(feed));
 
-		const totalCount = await this.feedRepository.count();
-
 		let nextCursor: string | undefined;
 		if (feeds.length > 0) {
 			const last = feeds[feeds.length - 1];
@@ -52,6 +50,6 @@ export class GetAllFeedsUseCase {
 			}
 		}
 
-		return new CursorPaginationResponseDto(feedDtos, totalCount, nextCursor);
+		return new CursorPaginationResponseDto(feedDtos, nextCursor);
 	}
 }

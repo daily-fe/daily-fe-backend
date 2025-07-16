@@ -3,12 +3,10 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CursorPaginationResponseDto<T> {
 	data: T[];
-	totalCount: number;
 	nextCursor?: string;
 
-	constructor(data: T[], totalCount: number, nextCursor?: string) {
+	constructor(data: T[], nextCursor?: string) {
 		this.data = data;
-		this.totalCount = totalCount;
 		this.nextCursor = nextCursor;
 	}
 }

@@ -1,3 +1,5 @@
+import { Category, Series } from '../constants';
+
 export class ArticleResponse {
 	id: string;
 	url: string;
@@ -6,8 +8,8 @@ export class ArticleResponse {
 	tags: string[];
 	author: string | null;
 	createdAt: Date | null;
-	series: string;
-	category?: string;
+	series?: Series;
+	category?: Category;
 	likes: number;
 	likedByMe: boolean;
 	createdBy: {

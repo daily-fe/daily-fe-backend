@@ -20,7 +20,7 @@ export class GetAllArticlesUseCase {
 	) {}
 
 	private buildBaseQuery(input: ArticleGetAllInputDto) {
-		const { series, keyword } = input;
+		const { series, category, keyword } = input;
 		const qb = this.articleRepository
 			.createQueryBuilder('article')
 			.leftJoinAndSelect('article.likes', 'like')
@@ -30,6 +30,9 @@ export class GetAllArticlesUseCase {
 
 		if (series) {
 			qb.andWhere('article.series = :series', { series });
+		}
+		if (category) {
+			qb.andWhere('article.category = :category', { category });
 		}
 		if (keyword) {
 			qb.andWhere('(article.title ILIKE :keyword OR article.summary ILIKE :keyword)', {

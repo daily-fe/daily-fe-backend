@@ -18,7 +18,7 @@ export class ArticleLike {
 	@ManyToOne(
 		() => Article,
 		(article) => article.likes,
-		{ eager: true },
+		{ eager: true, onDelete: 'CASCADE' },
 	)
 	@JoinColumn({ name: 'articleId', referencedColumnName: 'id' })
 	article: Article;

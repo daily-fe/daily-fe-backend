@@ -9,6 +9,7 @@ import { Article } from './entities/article.entity';
 import { ArticleLike } from './entities/article-like.entity';
 import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecase';
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
+import { DeleteArticleUseCase } from './use-cases/delete-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
 import { GetArticleUseCase } from './use-cases/get-article.usecase';
 import { GetLikedArticlesUseCase } from './use-cases/get-liked-articles.usecase';
@@ -31,6 +32,7 @@ import { UnlikeArticleUseCase } from './use-cases/unlike-article.usecase';
 		LikeArticleUseCase,
 		UnlikeArticleUseCase,
 		GetLikedArticlesUseCase,
+		DeleteArticleUseCase,
 	],
 })
 export class ArticleModule {}

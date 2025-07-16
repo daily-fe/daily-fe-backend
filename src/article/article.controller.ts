@@ -22,6 +22,7 @@ import { ArticleGetAllInputDto } from './dto/article-get-all-input.dto';
 import { ArticleResponse } from './dto/article-response.dto';
 import { AnalyzeArticleUrlUseCase } from './use-cases/analyze-article-url.usecase';
 import { CreateArticleUseCase } from './use-cases/create-article.usecase';
+import { DeleteArticleUseCase } from './use-cases/delete-article.usecase';
 import { GetAllArticlesUseCase } from './use-cases/get-all-articles.usecase';
 import { GetArticleUseCase } from './use-cases/get-article.usecase';
 import { GetLikedArticlesUseCase } from './use-cases/get-liked-articles.usecase';
@@ -39,6 +40,7 @@ export class ArticleController {
 		private readonly likeArticleUseCase: LikeArticleUseCase,
 		private readonly unlikeArticleUseCase: UnlikeArticleUseCase,
 		private readonly getLikedArticlesUseCase: GetLikedArticlesUseCase,
+		private readonly deleteArticleUseCase: DeleteArticleUseCase,
 	) {}
 
 	@Post('analyze')
@@ -98,5 +100,12 @@ export class ArticleController {
 	async unlikeArticle(@Param('id') id: string, @Req() req): Promise<ArticleResponse> {
 		const userId = req.user?.id;
 		return this.unlikeArticleUseCase.execute(id, userId);
+	}
+
+	@Delete(':id')
+	@UseGuards(JwtAuthGuard)
+	async deleteArticle(@Param('id') id: string, @Req() req): Promise<void> {
+		const userId = req.user?.id;
+		await this.deleteArticleUseCase.execute(id, userId);
 	}
 }

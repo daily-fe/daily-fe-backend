@@ -72,10 +72,13 @@ export class ArticleController {
 
 	@Get('liked')
 	@UseGuards(JwtAuthGuard)
-	async getLikedArticles(@Req() req): Promise<ArticleResponse[]> {
+	async getLikedArticles(
+		@Req() req,
+		@Query('cursor') cursor?: string,
+		@Query('limit') limit?: number,
+	): Promise<CursorPaginationResponseDto<ArticleResponse>> {
 		const userId = req.user?.id;
-		console.log('userId', userId);
-		return this.getLikedArticlesUseCase.execute(userId);
+		return this.getLikedArticlesUseCase.execute(userId, cursor, limit);
 	}
 
 	@Get(':id')

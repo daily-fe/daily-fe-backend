@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import { decodeGenericCursor, encodeGenericCursor } from '../../utils/cursor.util';
 import { CursorPaginationResponseDto } from '../../utils/cursor-pagination.dto';
 import { ArticleGetAllInputDto } from '../dto/article-get-all-input.dto';
 import { ArticleResponse } from '../dto/article-response.dto';
 import { Article } from '../entities/article.entity';
+
+interface ArticleRaw {
+	article_id: string;
+	likedByMe?: boolean | string;
+}
 
 @Injectable()
 export class GetAllArticlesUseCase {
@@ -14,7 +19,7 @@ export class GetAllArticlesUseCase {
 		private readonly articleRepository: Repository<Article>,
 	) {}
 
-	private buildBaseQuery(input: ArticleGetAllInputDto): SelectQueryBuilder<Article> {
+	private buildBaseQuery(input: ArticleGetAllInputDto) {
 		const { category, keyword } = input;
 		const qb = this.articleRepository
 			.createQueryBuilder('article')
@@ -34,7 +39,7 @@ export class GetAllArticlesUseCase {
 		return qb;
 	}
 
-	private static getNextCursor<T extends { createdAt: Date | null; id: string }>(entities: T[]): string | undefined {
+	private getNextCursor<T extends { createdAt: Date | null; id: string }>(entities: T[]) {
 		if (entities.length === 0) return undefined;
 		const last = entities[entities.length - 1];
 		if (last.createdAt && last.id) {
@@ -43,12 +48,14 @@ export class GetAllArticlesUseCase {
 		return undefined;
 	}
 
-	private static mapLikedByMe(raw: { article_id: string; likedByMe?: boolean | string }[]): Map<string, boolean> {
-		return new Map(
-			raw
-				.filter((row) => row.article_id !== undefined)
-				.map((row) => [row.article_id, row.likedByMe === true || row.likedByMe === 'true']),
-		);
+	private mapLikedByMe(raw: ArticleRaw[]): Map<string, boolean> {
+		const likedByMeMap = new Map<string, boolean>();
+		raw.forEach((row) => {
+			if (row.article_id !== undefined) {
+				likedByMeMap.set(row.article_id, row.likedByMe === true || row.likedByMe === 'true');
+			}
+		});
+		return likedByMeMap;
 	}
 
 	async execute(
@@ -56,6 +63,7 @@ export class GetAllArticlesUseCase {
 		userId?: number,
 	): Promise<CursorPaginationResponseDto<ArticleResponse>> {
 		const { cursor, limit = 10 } = input;
+
 		const qb = this.buildBaseQuery(input);
 
 		const parsedCursor = decodeGenericCursor<{ createdAt: string; id: string }>(cursor);
@@ -68,30 +76,39 @@ export class GetAllArticlesUseCase {
 		}
 		qb.take(limit + 1);
 
+		let articleResponses: ArticleResponse[];
+		let entities: Article[];
+		let nextCursor: string | undefined;
+
 		if (userId) {
-			const { entities, raw } = await qb
-				.addSelect(
-					(subQuery) =>
-						subQuery
-							.select('COUNT(*) > 0')
-							.from('article_like', 'al')
-							.where('al."articleId" = article.id')
-							.andWhere('al."userId" = :userId', { userId }),
-					'likedByMe',
-				)
+			const articles = await qb
+				.addSelect((subQuery) => {
+					return subQuery
+						.select('COUNT(*) > 0')
+						.from('article_like', 'al')
+						.where('al."articleId" = article.id')
+						.andWhere('al."userId" = :userId', { userId });
+				}, 'likedByMe')
 				.getRawAndEntities();
 
-			const pagedEntities = entities.slice(0, limit);
-			const likedByMeMap = GetAllArticlesUseCase.mapLikedByMe(raw.slice(0, limit));
-			const responses = pagedEntities.map((article) => article.toResponse(likedByMeMap.get(article.id) ?? false));
-			const nextCursor = entities.length > limit ? GetAllArticlesUseCase.getNextCursor(pagedEntities) : undefined;
-			return new CursorPaginationResponseDto(responses, nextCursor);
+			const hasNext = articles.entities.length > limit;
+			const pagedEntities = articles.entities.slice(0, limit);
+			const pagedRaw = (articles.raw as ArticleRaw[]).slice(0, limit);
+			const likedByMeMap = this.mapLikedByMe(pagedRaw);
+			articleResponses = pagedEntities.map((article) => {
+				const likedByMe = likedByMeMap.get(article.id) ?? false;
+				return article.toResponse(likedByMe);
+			});
+			entities = pagedEntities;
+			nextCursor = hasNext ? this.getNextCursor(entities) : undefined;
 		} else {
-			const entities = await qb.getMany();
-			const pagedEntities = entities.slice(0, limit);
-			const responses = pagedEntities.map((article) => article.toResponse(false));
-			const nextCursor = entities.length > limit ? GetAllArticlesUseCase.getNextCursor(pagedEntities) : undefined;
-			return new CursorPaginationResponseDto(responses, nextCursor);
+			const results = await qb.getMany();
+			const hasNext = results.length > limit;
+			entities = results.slice(0, limit);
+			articleResponses = entities.map((article) => article.toResponse(false));
+			nextCursor = hasNext ? this.getNextCursor(entities) : undefined;
 		}
+
+		return new CursorPaginationResponseDto(articleResponses, nextCursor);
 	}
 }

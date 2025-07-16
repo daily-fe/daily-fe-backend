@@ -1,7 +1,7 @@
 import { CursorPaginationRequestDto } from '../../utils/cursor-pagination.dto';
-import { Category } from '../constants';
+import { Series } from '../constants';
 
 export class ArticleGetAllInputDto extends CursorPaginationRequestDto {
-	category?: Category;
+	series?: Series;
 	keyword?: string;
 }

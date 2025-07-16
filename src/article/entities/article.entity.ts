@@ -1,7 +1,7 @@
 import { User } from 'src/user/entities/user.entity';
 import { generateBase62Id } from 'src/utils/base62.util';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
-import { CATEGORIES, Category } from '../constants';
+import { CATEGORY, Category, SERIES, Series } from '../constants';
 import { ArticleResponse } from '../dto/article-response.dto';
 import { ArticleLike } from './article-like.entity';
 
@@ -28,8 +28,11 @@ export class Article {
 	@Column({ type: 'timestamp', nullable: true })
 	createdAt: Date | null;
 
-	@Column({ type: 'enum', enum: CATEGORIES })
-	category: Category;
+	@Column({ type: 'enum', enum: SERIES })
+	series: Series;
+
+	@Column({ type: 'enum', enum: CATEGORY, nullable: true })
+	category?: Category;
 
 	@OneToMany(
 		() => ArticleLike,
@@ -48,8 +51,9 @@ export class Article {
 		tags: string[],
 		author: string | null,
 		createdAt: Date | null,
-		category: Category,
+		series: Series,
 		createdBy: User,
+		category?: Category,
 	) {
 		this.url = url;
 		this.id = id;
@@ -58,8 +62,9 @@ export class Article {
 		this.tags = tags;
 		this.author = author;
 		this.createdAt = createdAt;
-		this.category = category;
+		this.series = series;
 		this.createdBy = createdBy;
+		this.category = category;
 	}
 
 	static create(
@@ -69,15 +74,16 @@ export class Article {
 		tags: string[],
 		author: string | null,
 		createdAt: Date,
-		category: Category,
+		series: Series,
 		createdBy: User,
+		category?: Category,
 	): Article {
 		let date: Date | null = new Date(createdAt);
 		if (Number.isNaN(date.getTime())) {
 			date = null;
 		}
 		const id = generateBase62Id();
-		return new Article(url, id, title, summary, tags, author, date, category, createdBy);
+		return new Article(url, id, title, summary, tags, author, date, series, createdBy, category);
 	}
 
 	toResponse(likedByMe: boolean): ArticleResponse {
@@ -90,6 +96,7 @@ export class Article {
 			tags: this.tags,
 			author: this.author,
 			createdAt: this.createdAt,
+			series: this.series,
 			category: this.category,
 			likes: likesCount,
 			likedByMe,

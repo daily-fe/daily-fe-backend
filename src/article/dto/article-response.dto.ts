@@ -6,7 +6,8 @@ export class ArticleResponse {
 	tags: string[];
 	author: string | null;
 	createdAt: Date | null;
-	category: string;
+	series: string;
+	category?: string;
 	likes: number;
 	likedByMe: boolean;
 	createdBy: {

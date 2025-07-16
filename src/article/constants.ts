@@ -1,3 +1,6 @@
-export const CATEGORIES = ['Deep Dive', 'Trends', 'Interview', 'Review', 'Others'] as const;
+export const SERIES = ['Deep Dive', 'Trends', 'Interview', 'Review', 'Others'] as const;
 
-export type Category = (typeof CATEGORIES)[number];
+export type Series = (typeof SERIES)[number];
+
+export const CATEGORY = ['Frontend', 'Backend', 'AI', 'Mobile', 'DevOps', 'Other'] as const;
+export type Category = (typeof CATEGORY)[number];

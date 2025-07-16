@@ -1,4 +1,4 @@
-import { Category } from '../constants';
+import { Series } from '../constants';
 
 export class ArticleCreateInput {
 	url: string;
@@ -6,5 +6,5 @@ export class ArticleCreateInput {
 	summary: string;
 	tags: string[];
 	author: string | null;
-	category: Category;
+	series: Series;
 }

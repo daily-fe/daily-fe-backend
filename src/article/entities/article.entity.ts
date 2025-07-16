@@ -52,8 +52,8 @@ export class Article {
 		author: string | null,
 		createdAt: Date | null,
 		series: Series,
+		category: Category,
 		createdBy: User,
-		category?: Category,
 	) {
 		this.url = url;
 		this.id = id;
@@ -75,15 +75,15 @@ export class Article {
 		author: string | null,
 		createdAt: Date,
 		series: Series,
+		category: Category,
 		createdBy: User,
-		category?: Category,
 	): Article {
 		let date: Date | null = new Date(createdAt);
 		if (Number.isNaN(date.getTime())) {
 			date = null;
 		}
 		const id = generateBase62Id();
-		return new Article(url, id, title, summary, tags, author, date, series, createdBy, category);
+		return new Article(url, id, title, summary, tags, author, date, series, category, createdBy);
 	}
 
 	toResponse(likedByMe: boolean): ArticleResponse {

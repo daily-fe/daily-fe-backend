@@ -19,7 +19,7 @@ export class CreateArticleUseCase {
 	) {}
 
 	async execute(dto: ArticleCreateInput, userId?: number): Promise<ArticleResponse> {
-		const { url, title, summary, tags, author, series } = dto;
+		const { url, title, summary, tags, author, series, category } = dto;
 		const exists = await this.articleRepository.findOne({ where: { url } });
 		if (exists) throw new BadRequestException('이미 등록된 아티클입니다.');
 		let user: User | undefined;
@@ -30,13 +30,14 @@ export class CreateArticleUseCase {
 		if (!user) throw new BadRequestException('유효하지 않은 사용자입니다.');
 		const article = new Article(
 			url,
-			Article.create(url, title, summary, tags, author, new Date(), series, user).id,
+			Article.create(url, title, summary, tags, author, new Date(), series, category, user).id,
 			title,
 			summary,
 			tags,
 			author,
 			new Date(),
 			series,
+			category,
 			user,
 		);
 		const savedArticle = await this.articleRepository.save(article);

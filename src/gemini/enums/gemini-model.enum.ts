@@ -1,3 +1,3 @@
 export enum GeminiModel {
-	FLASH = 'gemini-1.5-flash',
+	FLASH = 'gemini-2.5-flash',
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { Public } from 'src/auth/decorator/public.decorator';
+import { Public } from '../auth/decorator/public.decorator';
 import { CreateFeedSourceUseCase } from './use-cases/feed-source/create-feed-source.usecase';
 import { FindAllFeedSourcesUseCase } from './use-cases/feed-source/find-all-feed-sources.usecase';
 import { RemoveFeedSourceUseCase } from './use-cases/feed-source/remove-feed-source.usecase';

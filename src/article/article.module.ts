@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GeminiModule } from 'src/gemini/gemini.module';
-import { ScraperModule } from 'src/scraper/scraper.module';
-import { User } from 'src/user/entities/user.entity';
+import { GeminiModule } from '../gemini/gemini.module';
+import { ScraperModule } from '../scraper/scraper.module';
+import { User } from '../user/entities/user.entity';
 import { ArticleController } from './article.controller';
 import { Article } from './entities/article.entity';
 import { ArticleLike } from './entities/article-like.entity';

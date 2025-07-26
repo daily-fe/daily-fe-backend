@@ -1,8 +1,8 @@
 import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ScraperModule } from 'src/scraper/scraper.module';
-import { User } from 'src/user/entities/user.entity';
-import { UserModule } from 'src/user/user.module';
+import { ScraperModule } from '../scraper/scraper.module';
+import { User } from '../user/entities/user.entity';
+import { UserModule } from '../user/user.module';
 import { Feed } from './entities/feed.entity';
 import { FeedSource } from './entities/feed-source.entity';
 import { FeedController } from './feed.controller';

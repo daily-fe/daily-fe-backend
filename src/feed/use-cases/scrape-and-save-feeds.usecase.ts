@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArticleSummary, WEB_CONTENT_SCRAPER } from 'src/scraper/interfaces/web-content-scraper.interface';
-import { WebContentScraperService } from 'src/scraper/services/web-content-scraper.service';
 import { Repository } from 'typeorm';
+import { ArticleSummary, WEB_CONTENT_SCRAPER } from '../../scraper/interfaces/web-content-scraper.interface';
+import { WebContentScraperService } from '../../scraper/services/web-content-scraper.service';
 import { Feed } from '../entities/feed.entity';
 
 @Injectable()

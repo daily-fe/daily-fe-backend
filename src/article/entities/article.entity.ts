@@ -1,6 +1,6 @@
-import { User } from 'src/user/entities/user.entity';
-import { generateBase62Id } from 'src/utils/base62.util';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { generateBase62Id } from '../../utils/base62.util';
 import { CATEGORY, Category, SERIES, Series } from '../constants';
 import { ArticleResponse } from '../dto/article-response.dto';
 import { ArticleLike } from './article-like.entity';

@@ -1,5 +1,5 @@
-import { ArticleLike } from 'src/article/entities/article-like.entity';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { ArticleLike } from '../../article/entities/article-like.entity';
 
 export enum Role {
 	ADMIN = 'admin',

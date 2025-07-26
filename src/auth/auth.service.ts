@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role, User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
+import { Role, User } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { GithubLoginDto } from './dto/github-login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 

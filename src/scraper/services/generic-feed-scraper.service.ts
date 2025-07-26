@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { FeedSource } from 'src/feed/entities/feed-source.entity';
 import { Repository } from 'typeorm';
+import { FeedSource } from '../../feed/entities/feed-source.entity';
 import { ArticleSummary, IWebFeedScraper } from '../interfaces/web-content-scraper.interface';
 import { parseFeed } from './feed-parser';
 

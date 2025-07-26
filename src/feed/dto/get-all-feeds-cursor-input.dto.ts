@@ -1,5 +1,5 @@
 import { IsIn, IsOptional } from 'class-validator';
-import { CursorPaginationRequestDto } from 'src/utils/cursor-pagination.dto';
+import { CursorPaginationRequestDto } from '../../utils/cursor-pagination.dto';
 
 export class GetAllFeedsCursorInputDto extends CursorPaginationRequestDto {
 	@IsOptional()

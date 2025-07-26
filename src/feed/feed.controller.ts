@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { Public } from 'src/auth/decorator/public.decorator';
-import { CursorPaginationResponseDto } from 'src/utils/cursor-pagination.dto';
+import { Public } from '../auth/decorator/public.decorator';
+import { CursorPaginationResponseDto } from '../utils/cursor-pagination.dto';
 import { FeedResponseDto } from './dto/feed-response.dto';
 import { GetAllFeedsCursorInputDto } from './dto/get-all-feeds-cursor-input.dto';
 import { GetAllFeedsUseCase } from './use-cases/get-all-feeds.usecase';

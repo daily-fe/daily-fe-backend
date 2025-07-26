@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { Public } from 'src/auth/decorator/public.decorator';
+import { Public } from '../auth/decorator/public.decorator';
 import { ScrapedArticleResponseDto } from './dto/scraped-article-response.dto';
 import { ScrapeFeedsUseCase } from './use-cases/scrape-feeds.usecase';
 

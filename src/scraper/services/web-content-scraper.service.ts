@@ -2,8 +2,8 @@ import { BadRequestException, Inject, Injectable, InternalServerErrorException }
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { Feed } from 'src/feed/entities/feed.entity';
 import { Repository } from 'typeorm';
+import { Feed } from '../../feed/entities/feed.entity';
 import { ArticleSummary, IWebFeedScraper, WEB_FEED_SCRAPER } from '../interfaces/web-content-scraper.interface';
 
 @Injectable()

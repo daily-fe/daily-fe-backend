@@ -1,10 +1,10 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GeminiModel } from 'src/gemini/enums/gemini-model.enum';
-import { GEMINI_SERVICE, IGeminiService } from 'src/gemini/interfaces/gemini.interface';
-import { IWebContentScraper, WEB_CONTENT_SCRAPER } from 'src/scraper/interfaces/web-content-scraper.interface';
-import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { GeminiModel } from '../../gemini/enums/gemini-model.enum';
+import { GEMINI_SERVICE, IGeminiService } from '../../gemini/interfaces/gemini.interface';
+import { IWebContentScraper, WEB_CONTENT_SCRAPER } from '../../scraper/interfaces/web-content-scraper.interface';
+import { User } from '../../user/entities/user.entity';
 import { Article } from '../entities/article.entity';
 
 @Injectable()

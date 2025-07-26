@@ -12,9 +12,9 @@ import {
 	UseInterceptors,
 	ValidationPipe,
 } from '@nestjs/common';
-import { Public } from 'src/auth/decorator/public.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt.strategy';
-import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
+import { Public } from '../auth/decorator/public.decorator';
+import { JwtAuthGuard } from '../auth/jwt.strategy';
+import { OptionalAuthGuard } from '../auth/optional-auth.guard';
 import { CursorPaginationResponseDto } from '../utils/cursor-pagination.dto';
 import { AnalyzeArticleUrlDto } from './dto/analyze-article-url.dto';
 import { ArticleCreateInput } from './dto/article-create-input.dto';

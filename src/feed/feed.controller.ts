@@ -1,4 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
+import { Public } from 'src/auth/decorator/public.decorator';
 import { CursorPaginationResponseDto } from 'src/utils/cursor-pagination.dto';
 import { FeedResponseDto } from './dto/feed-response.dto';
 import { GetAllFeedsCursorInputDto } from './dto/get-all-feeds-cursor-input.dto';
@@ -9,6 +10,7 @@ export class FeedController {
 	constructor(private readonly getAllFeedsUseCase: GetAllFeedsUseCase) {}
 
 	@Get()
+	@Public()
 	async getAllFeeds(
 		@Query() query: GetAllFeedsCursorInputDto,
 	): Promise<CursorPaginationResponseDto<FeedResponseDto>> {

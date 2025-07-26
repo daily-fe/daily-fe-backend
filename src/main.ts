@@ -8,7 +8,7 @@ async function bootstrap() {
 	// 임시로 모든 출처에서 허용되도록 설정
 	// TODO
 	app.enableCors({
-		origin: 'http://localhost:3000',
+		origin: process.env.WEB_URL,
 		credentials: true,
 	});
 	await app.listen(3001);

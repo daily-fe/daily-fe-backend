@@ -67,7 +67,9 @@ import { UserModule } from './user/user.module';
 						autoLoadEntities: true,
 						synchronize: false,
 						entities: [User, Article, ArticleLike, Feed, FeedSource],
-						ssl: true,
+						ssl: {
+							rejectUnauthorized: true,
+						},
 					};
 				} else {
 					// 개별 환경 변수 사용 (로컬 개발)

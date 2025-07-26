@@ -25,33 +25,65 @@ import { UserModule } from './user/user.module';
 			isGlobal: true,
 			validationSchema: Joi.object({
 				ENV: Joi.string().valid('dev', 'prod').required(),
-				DB_TYPE: Joi.string().valid('postgres').required(),
-				DB_HOST: Joi.string().required(),
-				DB_PORT: Joi.number().required(),
-				DB_USERNAME: Joi.string().required(),
-				DB_PASSWORD: Joi.string().required(),
-				DB_DATABASE: Joi.string().required(),
+				// DATABASE_URL 또는 개별 DB 설정 중 하나는 필수
+				DATABASE_URL: Joi.string().optional(),
+				DB_TYPE: Joi.string().valid('postgres').optional(),
+				DB_HOST: Joi.string().optional(),
+				DB_PORT: Joi.number().optional(),
+				DB_USERNAME: Joi.string().optional(),
+				DB_PASSWORD: Joi.string().optional(),
+				DB_DATABASE: Joi.string().optional(),
 				HASH_ROUNDS: Joi.number().required(),
 				ACCESS_TOKEN_SECRET: Joi.string().required(),
 				REFRESH_TOKEN_SECRET: Joi.string().required(),
 				GEMINI_API_KEY: Joi.string().required(),
+			}).custom((value, helpers) => {
+				// DATABASE_URL이 없으면 개별 DB 설정이 모두 있어야 함
+				if (!value.DATABASE_URL) {
+					if (
+						!value.DB_HOST ||
+						!value.DB_PORT ||
+						!value.DB_USERNAME ||
+						!value.DB_PASSWORD ||
+						!value.DB_DATABASE
+					) {
+						return helpers.error('DATABASE_URL 또는 개별 DB 설정이 필요합니다');
+					}
+				}
+				return value;
 			}),
 		}),
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
-			useFactory: (config: ConfigService) => ({
-				type: 'postgres',
-				host: config.get<string>('DB_HOST'),
-				port: config.get<number>('DB_PORT'),
-				username: config.get<string>('DB_USERNAME'),
-				password: config.get<string>('DB_PASSWORD'),
-				database: config.get<string>('DB_DATABASE'),
-				autoLoadEntities: true,
-				// TODO 개발 환경에서만 true
-				synchronize: true,
-				entities: [User, Article, ArticleLike, Feed, FeedSource],
-			}),
+			useFactory: (config: ConfigService) => {
+				const databaseUrl = config.get<string>('DATABASE_URL');
+
+				if (databaseUrl) {
+					// DATABASE_URL이 있는 경우 (Vercel 등)
+					return {
+						type: 'postgres',
+						url: databaseUrl,
+						autoLoadEntities: true,
+						synchronize: false,
+						entities: [User, Article, ArticleLike, Feed, FeedSource],
+						ssl: true,
+					};
+				} else {
+					// 개별 환경 변수 사용 (로컬 개발)
+					return {
+						type: 'postgres',
+						host: config.get<string>('DB_HOST'),
+						port: config.get<number>('DB_PORT'),
+						username: config.get<string>('DB_USERNAME'),
+						password: config.get<string>('DB_PASSWORD'),
+						database: config.get<string>('DB_DATABASE'),
+						autoLoadEntities: true,
+						synchronize: true,
+						entities: [User, Article, ArticleLike, Feed, FeedSource],
+					};
+				}
+			},
 		}),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],

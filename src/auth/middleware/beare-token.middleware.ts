@@ -31,7 +31,7 @@ export class BearerTokenMiddleware implements NestMiddleware {
 					: this.configService.get<string>('ACCESS_TOKEN_SECRET')!;
 
 			const payload = await this.jwtService.verify(token, {
-				secret: this.configService.get<string>(secretKey),
+				secret: secretKey,
 			});
 
 			const isRefreshToken = decodedToken.type === 'refresh';

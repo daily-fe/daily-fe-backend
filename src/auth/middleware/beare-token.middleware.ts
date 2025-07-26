@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class BearerTokenMiddleware implements NestMiddleware {
@@ -10,7 +10,7 @@ export class BearerTokenMiddleware implements NestMiddleware {
 		private readonly configService: ConfigService,
 	) {}
 
-	async use(req: Request, res: Response, next: NextFunction) {
+	async use(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const authHeader = req.headers['authorization'];
 		if (!authHeader) {
 			next();
@@ -46,7 +46,7 @@ export class BearerTokenMiddleware implements NestMiddleware {
 				}
 			}
 
-			req['user'] = payload;
+			(req as any)['user'] = payload;
 			next();
 		} catch (e) {
 			if (e.name === 'TokenExpiredError') {

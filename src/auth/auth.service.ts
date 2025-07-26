@@ -74,7 +74,7 @@ export class AuthService {
 		const refreshTokenSecret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
 		const accessTokenSecret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
 		return {
-			token: await this.jwtService.signAsync(
+			token: this.jwtService.sign(
 				{
 					sub: user.id,
 					role: user.role,
